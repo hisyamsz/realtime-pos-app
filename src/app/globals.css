@@ -61,30 +61,30 @@
   --spacing-xxl: 30px;
   --spacing-section: 48px;
 
-  /* Custom Nike Color Tokens */
-  --color-canvas: #ffffff;
-  --color-soft-cloud: #f5f5f5;
-  --color-ink: #111111;
-  --color-charcoal: #39393b;
-  --color-ash: #4b4b4d;
-  --color-mute: #707072;
-  --color-stone: #9e9ea0;
-  --color-hairline: #cacacb;
-  --color-hairline-soft: #e5e5e5;
+  /* Custom Nike Color Tokens mapped to CSS variables for dynamic Dark Mode */
+  --color-canvas: var(--canvas);
+  --color-soft-cloud: var(--soft-cloud);
+  --color-ink: var(--ink);
+  --color-charcoal: var(--charcoal);
+  --color-ash: var(--ash);
+  --color-mute: var(--mute);
+  --color-stone: var(--stone);
+  --color-hairline: var(--hairline);
+  --color-hairline-soft: var(--hairline-soft);
   
-  --color-sale: #d30005;
-  --color-sale-deep: #780700;
-  --color-success: #007d48;
-  --color-success-bright: #1eaa52;
-  --color-info: #1151ff;
-  --color-info-deep: #0034e3;
+  --color-sale: var(--sale);
+  --color-sale-deep: var(--sale-deep);
+  --color-success: var(--success);
+  --color-success-bright: var(--success-bright);
+  --color-info: var(--info);
+  --color-info-deep: var(--info-deep);
 
-  --color-accent-pink: #ed1aa0;
-  --color-accent-pink-soft: #ffb0dd;
-  --color-accent-purple-soft: #beaffd;
-  --color-accent-purple-pale: #d6d1ff;
-  --color-accent-teal: #0a7281;
-  --color-accent-pink-deep: #4c012d;
+  --color-accent-pink: var(--accent-pink);
+  --color-accent-pink-soft: var(--accent-pink-soft);
+  --color-accent-purple-soft: var(--accent-purple-soft);
+  --color-accent-purple-pale: var(--accent-purple-pale);
+  --color-accent-teal: var(--accent-teal);
+  --color-accent-pink-deep: var(--accent-pink-deep);
 }
 
 :root {
@@ -133,6 +133,31 @@
   --sidebar-accent-foreground: #111111;
   --sidebar-border: #e5e5e5;
   --sidebar-ring: #cacacb;
+
+  /* Custom Nike Color Variables (Light Mode) */
+  --canvas: #ffffff;
+  --soft-cloud: #f5f5f5;
+  --ink: #111111;
+  --charcoal: #39393b;
+  --ash: #4b4b4d;
+  --mute: #707072;
+  --stone: #9e9ea0;
+  --hairline: #cacacb;
+  --hairline-soft: #e5e5e5;
+  
+  --sale: #d30005;
+  --sale-deep: #780700;
+  --success: #007d48;
+  --success-bright: #1eaa52;
+  --info: #1151ff;
+  --info-deep: #0034e3;
+
+  --accent-pink: #ed1aa0;
+  --accent-pink-soft: #ffb0dd;
+  --accent-purple-soft: #beaffd;
+  --accent-purple-pale: #d6d1ff;
+  --accent-teal: #0a7281;
+  --accent-pink-deep: #4c012d;
 }
 
 .dark {
@@ -149,30 +174,55 @@
   --primary: #ffffff;
   --primary-foreground: #111111;
   
-  --secondary: #39393b;
+  --secondary: #1c1c1e;
   --secondary-foreground: #ffffff;
   
-  --muted: #39393b;
+  --muted: #1c1c1e;
   --muted-foreground: #9e9ea0;
   
-  --accent: #39393b;
+  --accent: #1c1c1e;
   --accent-foreground: #ffffff;
   
-  --destructive: #780700;
+  --destructive: #ff4d4f;
   --destructive-foreground: #ffffff;
   
-  --border: #39393b;
-  --input: #39393b;
-  --ring: #707072;
+  --border: #2c2c2e;
+  --input: #2c2c2e;
+  --ring: #3a3a3c;
 
   --sidebar: #111111;
   --sidebar-foreground: #ffffff;
   --sidebar-primary: #ffffff;
   --sidebar-primary-foreground: #111111;
-  --sidebar-accent: #39393b;
+  --sidebar-accent: #1c1c1e;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #39393b;
-  --sidebar-ring: #707072;
+  --sidebar-border: #2c2c2e;
+  --sidebar-ring: #3a3a3c;
+
+  /* Custom Nike Color Variables (Dark Mode) */
+  --canvas: #111111;
+  --soft-cloud: #1c1c1e;
+  --ink: #ffffff;
+  --charcoal: #e4e4e6;
+  --ash: #c7c7c9;
+  --mute: #9e9ea0;
+  --stone: #707072;
+  --hairline: #3a3a3c;
+  --hairline-soft: #2c2c2e;
+  
+  --sale: #ff4d4f;
+  --sale-deep: #ff8a8b;
+  --success: #30d158;
+  --success-bright: #6ee68a;
+  --info: #5c8aff;
+  --info-deep: #8fabff;
+
+  --accent-pink: #ff4dc4;
+  --accent-pink-soft: #ffb0dd;
+  --accent-purple-soft: #c9bbff;
+  --accent-purple-pale: #a89bfd;
+  --accent-teal: #3fb6c9;
+  --accent-pink-deep: #ff9fd6;
 }
 
 /* Typography Utilities mapping to Design Tokens */

@@ -24,6 +24,7 @@ import {
 import { loginSchema, type LoginForm } from "@/validation/auth-validation";
 import { PasswordInput } from "@/components/common/password-input";
 import { FormInput } from "@/components/common/FormInput";
+import { DarkmodeToggle } from "@/components/common/darkmode-toggle";
 import { loginAction as loginServerAction } from "../action";
 
 export default function Login() {
@@ -104,7 +105,10 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-soft-cloud p-4 md:p-8">
+    <div className="relative flex min-h-screen items-center justify-center bg-soft-cloud p-4 md:p-8">
+      <div className="absolute top-4 right-4 md:top-8 md:right-8">
+        <DarkmodeToggle />
+      </div>
       <Card className="w-full max-w-[500px] rounded-none shadow-none bg-canvas p-4 md:p-8">
         <CardHeader className="!flex flex-col items-center gap-4 text-center px-0 pt-0">
           <div className="flex items-center justify-center gap-3">
