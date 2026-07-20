@@ -1,13 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Fonts */
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Bebas Neue", sans-serif;
+
+  /* Theme mappings for shadcn components */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -37,79 +42,244 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Border Radius (Nike Specific) */
+  --radius-nike-none: 0px;
+  --radius-nike-sm: 18px;
+  --radius-nike-md: 24px;
+  --radius-nike-lg: 30px;
+  --radius-nike-xl: 30px;
+  --radius-nike-full: 9999px;
+
+  /* Spacing Tokens */
+  --spacing-xxs: 2px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 18px;
+  --spacing-xl: 24px;
+  --spacing-xxl: 30px;
+  --spacing-section: 48px;
+
+  /* Custom Nike Color Tokens */
+  --color-canvas: #ffffff;
+  --color-soft-cloud: #f5f5f5;
+  --color-ink: #111111;
+  --color-charcoal: #39393b;
+  --color-ash: #4b4b4d;
+  --color-mute: #707072;
+  --color-stone: #9e9ea0;
+  --color-hairline: #cacacb;
+  --color-hairline-soft: #e5e5e5;
+  
+  --color-sale: #d30005;
+  --color-sale-deep: #780700;
+  --color-success: #007d48;
+  --color-success-bright: #1eaa52;
+  --color-info: #1151ff;
+  --color-info-deep: #0034e3;
+
+  --color-accent-pink: #ed1aa0;
+  --color-accent-pink-soft: #ffb0dd;
+  --color-accent-purple-soft: #beaffd;
+  --color-accent-purple-pale: #d6d1ff;
+  --color-accent-teal: #0a7281;
+  --color-accent-pink-deep: #4c012d;
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 0.5rem;
+
+  /* Light Mode Core Variables */
+  --background: #ffffff;
+  --foreground: #111111;
+  
+  --card: #ffffff;
+  --card-foreground: #111111;
+  
+  --popover: #ffffff;
+  --popover-foreground: #111111;
+  
+  --primary: #111111;
+  --primary-foreground: #ffffff;
+  
+  --secondary: #f5f5f5;
+  --secondary-foreground: #111111;
+  
+  --muted: #f5f5f5;
+  --muted-foreground: #707072;
+  
+  --accent: #f5f5f5;
+  --accent-foreground: #111111;
+  
+  --destructive: #d30005;
+  --destructive-foreground: #ffffff;
+  
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #cacacb;
+
+  --chart-1: #1151ff;
+  --chart-2: #007d48;
+  --chart-3: #ed1aa0;
+  --chart-4: #0a7281;
+  --chart-5: #beaffd;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #111111;
+  --sidebar-primary: #111111;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f5f5;
+  --sidebar-accent-foreground: #111111;
+  --sidebar-border: #e5e5e5;
+  --sidebar-ring: #cacacb;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Dark Mode Core Variables */
+  --background: #111111;
+  --foreground: #ffffff;
+  
+  --card: #111111;
+  --card-foreground: #ffffff;
+  
+  --popover: #111111;
+  --popover-foreground: #ffffff;
+  
+  --primary: #ffffff;
+  --primary-foreground: #111111;
+  
+  --secondary: #39393b;
+  --secondary-foreground: #ffffff;
+  
+  --muted: #39393b;
+  --muted-foreground: #9e9ea0;
+  
+  --accent: #39393b;
+  --accent-foreground: #ffffff;
+  
+  --destructive: #780700;
+  --destructive-foreground: #ffffff;
+  
+  --border: #39393b;
+  --input: #39393b;
+  --ring: #707072;
+
+  --sidebar: #111111;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #111111;
+  --sidebar-accent: #39393b;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #39393b;
+  --sidebar-ring: #707072;
+}
+
+/* Typography Utilities mapping to Design Tokens */
+@utility text-display-campaign {
+  font-family: var(--font-display);
+  font-size: 96px;
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+@utility text-heading-xl {
+  font-family: var(--font-sans);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+@utility text-heading-lg {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+@utility text-heading-md {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.75;
+  letter-spacing: 0;
+}
+
+@utility text-body-md {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+@utility text-body-strong {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+@utility text-button-lg {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+@utility text-button-md {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+@utility text-button-sm {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+@utility text-link-md {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.75;
+  letter-spacing: 0;
+  text-decoration: underline;
+}
+
+@utility text-caption-md {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+@utility text-caption-sm {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+@utility text-utility-xs {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 500;
+  line-height: 1.75;
+  letter-spacing: 0;
 }
 
 @layer base {
@@ -118,5 +288,56 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
   }
+
+  /* Universal Component Overrides */
+  
+  /* Buttons */
+  [data-slot="button"] {
+    border-radius: var(--radius-nike-full) !important;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  /* Target Button Sizes generated by cva class compilations */
+  [data-slot="button"].h-9 {
+    /* Nike standard button-md: height 48px, padding 16px 32px */
+    height: 48px !important;
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+    font-size: 16px !important;
+  }
+
+  [data-slot="button"].h-8 {
+    /* Nike standard button-sm: height 38px, padding 20px */
+    height: 38px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    font-size: 14px !important;
+  }
+
+  [data-slot="button"].h-10 {
+    /* Nike standard button-lg: height 56px, padding 40px */
+    height: 56px !important;
+    padding-left: 40px !important;
+    padding-right: 40px !important;
+    font-size: 24px !important;
+  }
+
+  [data-slot="button"].size-9 {
+    /* Circular icon buttons: size 40px, rounded full */
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: var(--radius-nike-full) !important;
+    padding: 0 !important;
+  }
+
+  /* Active Scaling click feedback (Nike tap-collapse signature) */
+  [data-slot="button"]:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+
 }
