@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import { forwardRef, ForwardedRef, useState, ReactElement } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { FormInput } from '@/components/common/FormInput';
 import { Input } from '@/components/ui/input';
@@ -13,14 +13,14 @@ export type PasswordInputProps<
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = BaseFormInputProps<TFieldValues, TName>;
 
-const PasswordInputComponent = React.forwardRef(<
+const PasswordInputComponent = forwardRef(<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   { className, control, name, label, error, placeholder, ...props }: PasswordInputProps<TFieldValues, TName>,
-  ref: React.ForwardedRef<HTMLInputElement>
+  ref: ForwardedRef<HTMLInputElement>
 ) => {
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -32,12 +32,13 @@ const PasswordInputComponent = React.forwardRef(<
       name={name}
       label={label}
       error={error}
-      renderInput={(field) => (
+      renderInput={(field, fieldState) => (
         <div className="relative w-full">
           <Input
             type={showPassword ? 'text' : 'password'}
             className={cn('!pr-12', className)}
             placeholder={placeholder}
+            aria-invalid={!!fieldState?.error || !!error}
             {...props}
             {...field}
           />
@@ -65,7 +66,7 @@ const PasswordInput = PasswordInputComponent as <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
-  props: PasswordInputProps<TFieldValues, TName> & { ref?: React.ForwardedRef<HTMLInputElement> }
-) => React.ReactElement;
+  props: PasswordInputProps<TFieldValues, TName> & { ref?: ForwardedRef<HTMLInputElement> }
+) => ReactElement;
 
 export { PasswordInput };

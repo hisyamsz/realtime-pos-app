@@ -1,5 +1,11 @@
-import * as React from "react";
-import { Control, FieldPath, FieldValues, ControllerRenderProps } from "react-hook-form";
+import { ReactNode, Ref } from "react";
+import {
+  Control,
+  FieldPath,
+  FieldValues,
+  ControllerRenderProps,
+  ControllerFieldState,
+} from "react-hook-form";
 import {
   FormField,
   FormItem,
@@ -14,7 +20,10 @@ export interface FormInputProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > extends BaseFormInputProps<TFieldValues, TName> {
-  renderInput?: (field: ControllerRenderProps<TFieldValues, TName>) => React.ReactNode;
+  renderInput?: (
+    field: ControllerRenderProps<TFieldValues, TName>,
+    fieldState: ControllerFieldState,
+  ) => ReactNode;
 }
 
 export function FormInput<
@@ -28,18 +37,18 @@ export function FormInput<
   renderInput,
   ref,
   ...props
-}: FormInputProps<TFieldValues, TName> & { ref?: React.Ref<HTMLInputElement> }) {
+}: FormInputProps<TFieldValues, TName> & { ref?: Ref<HTMLInputElement> }) {
   if (control && name) {
     return (
       <FormField
         control={control}
         name={name}
-        render={({ field }) => (
-          <FormItem className="flex flex-col gap-1 space-y-2">
+        render={({ field, fieldState }) => (
+          <FormItem className="flex flex-col gap-1 space-y-1">
             {label && <FormLabel>{label}</FormLabel>}
             <FormControl>
               {renderInput ? (
-                renderInput(field)
+                renderInput(field, fieldState)
               ) : (
                 <Input {...props} {...field} />
               )}
