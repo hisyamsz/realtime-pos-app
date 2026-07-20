@@ -4,6 +4,8 @@ import { useActionState, useEffect, useState, startTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Store } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,16 +17,20 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 
-import { INITIAL_LOGIN_FORM, INITIAL_STATE_LOGIN_FORM } from "@/constants/auth-constants";
+import {
+  INITIAL_LOGIN_FORM,
+  INITIAL_STATE_LOGIN_FORM,
+} from "@/constants/auth-constants";
 import { loginSchema, type LoginForm } from "@/validation/auth-validation";
 import { PasswordInput } from "@/components/common/password-input";
 import { FormInput } from "@/components/common/FormInput";
-import { loginAction } from "../action";
+import { loginAction as loginServerAction } from "../action";
 
 export default function Login() {
-  const [state, formAction, isPending] = useActionState(
-    loginAction,
-    INITIAL_STATE_LOGIN_FORM
+  const router = useRouter();
+  const [loginState, loginAction, isPending] = useActionState(
+    loginServerAction,
+    INITIAL_STATE_LOGIN_FORM,
   );
 
   const [formError, setFormError] = useState<string | null>(null);
@@ -35,31 +41,54 @@ export default function Login() {
   });
 
   useEffect(() => {
-    if (state.errors) {
-      if (state.errors.email && state.errors.email.length > 0) {
-        form.setError("email", {
-          type: "server",
-          message: state.errors.email[0],
-        });
-      }
-      if (state.errors.password && state.errors.password.length > 0) {
-        form.setError("password", {
-          type: "server",
-          message: state.errors.password[0],
-        });
-      }
-      if (state.errors._form && state.errors._form.length > 0) {
-        setFormError(state.errors._form[0]);
-      }
+    if (loginState?.status === 'error') {
+      toast.error('Login Failed', {
+        description: loginState.errors?._form?.[0],
+        position: 'top-right',
+      });
+      startTransition(() => {
+        loginAction(null);
+      });
+    } else if (loginState?.status === 'success') {
+      toast.success('Login Berhasil!', {
+        description: 'Mengarahkan ke beranda...',
+        position: 'top-right',
+      });
+      startTransition(() => {
+        loginAction(null);
+      });
+      router.push('/');
     }
-  }, [state, form]);
+  }, [loginState, router]);
 
   useEffect(() => {
-    const subscription = form.watch(() => {
+    if (loginState.errors) {
+      if (loginState.errors.email && loginState.errors.email.length > 0) {
+        form.setError("email", {
+          type: "server",
+          message: loginState.errors.email[0],
+        });
+      }
+      if (loginState.errors.password && loginState.errors.password.length > 0) {
+        form.setError("password", {
+          type: "server",
+          message: loginState.errors.password[0],
+        });
+      }
+      if (loginState.errors._form && loginState.errors._form.length > 0) {
+        setFormError(loginState.errors._form[0]);
+      }
+    }
+  }, [loginState, form]);
+
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
       if (formError) {
         setFormError(null);
       }
-      form.clearErrors();
+      if (name) {
+        form.clearErrors(name as any);
+      }
     });
     return () => subscription.unsubscribe();
   }, [form, formError]);
@@ -68,9 +97,9 @@ export default function Login() {
     const formData = new FormData();
     formData.append("email", data.email);
     formData.append("password", data.password);
-    
+
     startTransition(() => {
-      formAction(formData);
+      loginAction(formData);
     });
   };
 
@@ -116,7 +145,11 @@ export default function Login() {
                 placeholder="Enter your password"
                 disabled={isPending}
               />
-              <Button type="submit" className="w-full mt-4" disabled={isPending}>
+              <Button
+                type="submit"
+                className="w-full mt-4"
+                disabled={isPending}
+              >
                 {isPending ? "Signing In..." : "Sign In"}
               </Button>
             </form>
