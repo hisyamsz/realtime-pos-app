@@ -12,19 +12,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 
 import { INITIAL_LOGIN_FORM } from "@/constants/auth-constants";
 import { loginSchema, type LoginForm } from "@/validation/auth-validation";
 import { PasswordInput } from "@/components/common/password-input";
+import { FormInput } from "@/components/common/FormInput";
 
 export default function Login() {
   const form = useForm<LoginForm>({
@@ -55,39 +48,20 @@ export default function Login() {
             <form
               onSubmit={form.handleSubmit(onSubmit)}
               className="flex flex-col gap-6"
+              noValidate
             >
-              <FormField
+              <FormInput
                 control={form.control}
                 name="email"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col gap-1 space-y-2">
-                    <FormLabel>Email Address:</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="name@example.com"
-                        type="email"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Email Address:"
+                placeholder="name@example.com"
+                type="email"
               />
-              <FormField
+              <PasswordInput
                 control={form.control}
                 name="password"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col gap-1 space-y-2">
-                    <FormLabel>Password:</FormLabel>
-                    <FormControl>
-                      <PasswordInput
-                        placeholder="Enter your password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Password:"
+                placeholder="Enter your password"
               />
               <Button type="submit" className="w-full mt-4">
                 Sign In
