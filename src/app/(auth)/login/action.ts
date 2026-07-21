@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { loginSchema } from '@/validation/auth-validation';
 import { createClient } from '@/lib/supabase/server';
 import { LoginFormState } from '@/types/auth';
@@ -23,6 +24,7 @@ export async function loginAction(
 
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
+  const callbackUrl = (formData.get('callbackUrl') as string) || '/';
 
   const validatedFields = loginSchema.safeParse({
     email,
@@ -85,9 +87,6 @@ export async function loginAction(
   }
 
   revalidatePath('/', 'layout');
-  return {
-    status: 'success',
-    message: 'Login successful',
-    errors: {},
-  };
+  redirect(callbackUrl);
 }
+

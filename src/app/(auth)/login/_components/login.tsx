@@ -51,18 +51,8 @@ export default function Login() {
       startTransition(() => {
         loginAction(null);
       });
-    } else if (loginState?.status === 'success') {
-      const callbackUrl = searchParams.get('callbackUrl');
-      toast.success('Login Berhasil!', {
-        description: 'Mengarahkan ke halaman tujuan...',
-        position: 'top-right',
-      });
-      startTransition(() => {
-        loginAction(null);
-      });
-      router.push(callbackUrl || '/');
     }
-  }, [loginState, router, searchParams]);
+  }, [loginState]);
 
   useEffect(() => {
     if (loginState.errors) {
@@ -101,10 +91,16 @@ export default function Login() {
     formData.append('email', data.email);
     formData.append('password', data.password);
 
+    const callbackUrl = searchParams.get('callbackUrl');
+    if (callbackUrl) {
+      formData.append('callbackUrl', callbackUrl);
+    }
+
     startTransition(() => {
       loginAction(formData);
     });
   };
+
 
   return (
     <div className="bg-soft-cloud relative flex min-h-screen items-center justify-center p-4 md:p-8">
