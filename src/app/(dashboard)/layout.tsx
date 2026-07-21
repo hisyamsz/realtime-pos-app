@@ -31,7 +31,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <DarkmodeToggle />
           </div>
         </header>
-        <main className="flex flex-1 flex-col items-start gap-4 p-4 pt-0">
+        <main className="flex flex-1 flex-col items-start gap-4 p-4 lg:p-6 pt-0">
           {children}
         </main>
       </SidebarInset>

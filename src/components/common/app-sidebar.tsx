@@ -156,29 +156,31 @@ export default function AppSidebar() {
           <SidebarGroupContent className="flex flex-col gap-2">
             <SidebarMenu>
               {SIDEBAR_MENU_LIST[userProfile?.role as SidebarMenuKey]?.map(
-                (item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild tooltip={item.title}>
-                      <Link
-                        href={item.url}
+                (item) => {
+                  const isActive = pathname === item.url;
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive}
+                        tooltip={item.title}
                         className={cn(
-                          'px-4 py-3 h-auto rounded-lg transition-colors flex items-center gap-3',
-                          {
-                            'bg-ink text-canvas hover:bg-ink hover:text-canvas font-medium':
-                              pathname === item.url,
-                            'text-mute hover:text-ink hover:bg-soft-cloud':
-                              pathname !== item.url,
-                          },
+                          'px-4 py-3 h-auto rounded-lg transition-colors flex items-center gap-3 text-sm font-medium',
+                          isActive
+                            ? 'bg-ink text-canvas hover:bg-ink/90 hover:text-canvas data-[active=true]:bg-ink data-[active=true]:text-canvas data-[active=true]:hover:bg-ink/90 data-[active=true]:hover:text-canvas'
+                            : 'text-mute hover:text-ink hover:bg-soft-cloud dark:hover:bg-white/10 dark:hover:text-white bg-transparent',
                         )}
                       >
-                        {item.icon && (
-                          <item.icon className="h-4 w-4 shrink-0" />
-                        )}
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ),
+                        <Link href={item.url}>
+                          {item.icon && (
+                            <item.icon className="h-4 w-4 shrink-0" />
+                          )}
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                },
               )}
             </SidebarMenu>
           </SidebarGroupContent>
