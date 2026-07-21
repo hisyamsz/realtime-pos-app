@@ -18,7 +18,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className="overflow-x-hidden">
-        <header className="flex justify-between h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+        <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="cursor-pointer" />
             <Separator
@@ -31,7 +31,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <DarkmodeToggle />
           </div>
         </header>
-        <main className="flex flex-1 flex-col items-start gap-4 p-4 lg:p-6 pt-0">
+        <main className="flex flex-1 flex-col items-start gap-4 p-4 pt-0 lg:p-6">
           {children}
         </main>
       </SidebarInset>

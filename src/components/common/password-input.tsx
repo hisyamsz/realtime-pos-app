@@ -53,7 +53,7 @@ const PasswordInputComponent = forwardRef(
             />
             <button
               type="button"
-              className="absolute right-0 top-0 h-full w-12 flex items-center justify-center text-muted-foreground hover:text-foreground bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground rounded-r-[8px]"
+              className="text-muted-foreground hover:text-foreground focus-visible:ring-foreground absolute top-0 right-0 flex h-full w-12 items-center justify-center rounded-r-[8px] bg-transparent focus:outline-none focus-visible:ring-2"
               onClick={togglePasswordVisibility}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >

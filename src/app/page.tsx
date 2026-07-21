@@ -13,12 +13,12 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 min-h-screen relative">
+    <div className="relative flex min-h-screen flex-col items-center justify-center gap-2">
       <div className="absolute top-4 right-4 md:top-8 md:right-8">
         <DarkmodeToggle />
       </div>
 
-      <Card className="p-10 flex flex-col items-center">
+      <Card className="flex flex-col items-center p-10">
         <h1 className="text-heading-xl mb-2 drop-shadow-lg">
           Welcome To Omni POS
         </h1>

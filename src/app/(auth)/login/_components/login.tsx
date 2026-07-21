@@ -107,14 +107,14 @@ export default function Login() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-soft-cloud p-4 md:p-8">
+    <div className="bg-soft-cloud relative flex min-h-screen items-center justify-center p-4 md:p-8">
       <div className="absolute top-4 right-4 md:top-8 md:right-8">
         <DarkmodeToggle />
       </div>
-      <Card className="w-full max-w-[500px] shadow-none bg-canvas p-4 md:p-8">
-        <CardHeader className="!flex flex-col items-center gap-4 text-center px-0 pt-0">
+      <Card className="bg-canvas w-full max-w-[500px] p-4 shadow-none md:p-8">
+        <CardHeader className="!flex flex-col items-center gap-4 px-0 pt-0 text-center">
           <div className="flex items-center justify-center gap-3">
-            <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-ink text-canvas">
+            <div className="bg-ink text-canvas flex aspect-square size-10 items-center justify-center rounded-lg">
               <Store className="size-5" />
             </div>
             <CardTitle className="text-heading-xl">Omni POS</CardTitle>
@@ -133,7 +133,7 @@ export default function Login() {
               noValidate
             >
               {formError && (
-                <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md border border-destructive/20 font-medium">
+                <div className="text-destructive bg-destructive/10 border-destructive/20 rounded-md border p-3 text-sm font-medium">
                   {formError}
                 </div>
               )}
@@ -155,7 +155,7 @@ export default function Login() {
               />
               <Button
                 type="submit"
-                className="w-full mt-4"
+                className="mt-4 w-full"
                 disabled={isPending}
               >
                 {isPending ? 'Signing In...' : 'Sign In'}

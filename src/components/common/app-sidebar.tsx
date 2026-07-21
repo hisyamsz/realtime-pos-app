@@ -136,11 +136,11 @@ export default function AppSidebar() {
               className="hover:bg-transparent"
             >
               <Link href="/">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-ink text-canvas">
+                <div className="bg-ink text-canvas flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Store className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                  <span className="truncate font-semibold text-lg">
+                  <span className="truncate text-lg font-semibold">
                     Omni POS
                   </span>
                 </div>
@@ -165,10 +165,10 @@ export default function AppSidebar() {
                         isActive={isActive}
                         tooltip={item.title}
                         className={cn(
-                          'px-4 py-3 h-auto rounded-lg transition-colors flex items-center gap-3 text-sm font-medium',
+                          'flex h-auto items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors',
                           isActive
                             ? 'bg-ink text-canvas hover:bg-ink/90 hover:text-canvas data-[active=true]:bg-ink data-[active=true]:text-canvas data-[active=true]:hover:bg-ink/90 data-[active=true]:hover:text-canvas'
-                            : 'text-mute hover:text-ink hover:bg-soft-cloud dark:hover:bg-white/10 dark:hover:text-white bg-transparent',
+                            : 'text-mute hover:text-ink hover:bg-soft-cloud bg-transparent dark:hover:bg-white/10 dark:hover:text-white',
                         )}
                       >
                         <Link href={item.url}>
@@ -194,7 +194,7 @@ export default function AppSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
-                  className="w-full justify-between items-center data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground w-full items-center justify-between"
                 >
                   <div className="flex items-center gap-2 overflow-hidden">
                     <Avatar className="h-8 w-8 rounded-lg">
@@ -202,7 +202,7 @@ export default function AppSidebar() {
                         src={userProfile?.avatar_url}
                         alt={userProfile?.name}
                       />
-                      <AvatarFallback className="rounded-lg bg-ink text-canvas font-semibold">
+                      <AvatarFallback className="bg-ink text-canvas rounded-lg font-semibold">
                         {userProfile?.name
                           ? getInitials(userProfile.name)
                           : 'U'}
@@ -212,12 +212,12 @@ export default function AppSidebar() {
                       <span className="truncate font-semibold">
                         {userProfile?.name || 'Loading...'}
                       </span>
-                      <span className="truncate text-xs text-mute capitalize">
+                      <span className="text-mute truncate text-xs capitalize">
                         {userProfile?.role || 'user'}
                       </span>
                     </div>
                   </div>
-                  <MoreVertical className="h-4 w-4 shrink-0 text-mute group-data-[collapsible=icon]:hidden" />
+                  <MoreVertical className="text-mute h-4 w-4 shrink-0 group-data-[collapsible=icon]:hidden" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -229,10 +229,10 @@ export default function AppSidebar() {
               >
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex flex-col space-y-1 p-2">
-                    <p className="text-sm font-semibold leading-none truncate">
+                    <p className="truncate text-sm leading-none font-semibold">
                       {userProfile?.name || 'Loading...'}
                     </p>
-                    <p className="text-xs leading-none text-mute capitalize truncate">
+                    <p className="text-mute truncate text-xs leading-none capitalize">
                       {userProfile?.role || 'user'}
                     </p>
                   </div>
@@ -255,9 +255,9 @@ export default function AppSidebar() {
                   disabled={isLoggingOut}
                 >
                   {isLoggingOut ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin text-sale" />
+                    <Loader2 className="text-sale mr-2 h-4 w-4 animate-spin" />
                   ) : (
-                    <LogOut className="mr-2 h-4 w-4 text-sale" />
+                    <LogOut className="text-sale mr-2 h-4 w-4" />
                   )}
                   <span>{isLoggingOut ? 'Logging out...' : 'Logout'}</span>
                 </DropdownMenuItem>

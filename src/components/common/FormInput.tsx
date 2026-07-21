@@ -62,14 +62,14 @@ export function FormInput<
 
   if (label || error) {
     return (
-      <div className="flex flex-col gap-1 space-y-2 w-full">
+      <div className="flex w-full flex-col gap-1 space-y-2">
         {label && (
-          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+          <label className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             {label}
           </label>
         )}
         <Input ref={ref} {...props} />
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && <p className="text-destructive text-sm">{error}</p>}
       </div>
     );
   }
