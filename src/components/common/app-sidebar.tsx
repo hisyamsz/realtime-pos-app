@@ -44,6 +44,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
+import { Skeleton } from '../ui/skeleton';
 
 interface UserProfile {
   name: string;
@@ -65,35 +66,42 @@ export default function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      try {
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
 
-        if (profile) {
-          setUserProfile({
-            name: profile.name || profile.full_name || 'User',
-            role: profile.role || '',
-            avatar_url: profile.avatar_url,
-          });
-        } else {
-          setUserProfile({
-            name: user.email?.split('@')[0] || 'User',
-            role: '',
-            avatar_url: undefined,
-          });
+          if (profile) {
+            setUserProfile({
+              name: profile.name || profile.full_name || 'User',
+              role: profile.role || '',
+              avatar_url: profile.avatar_url,
+            });
+          } else {
+            setUserProfile({
+              name: user.email?.split('@')[0] || 'User',
+              role: '',
+              avatar_url: undefined,
+            });
+          }
         }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -155,33 +163,42 @@ export default function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent className="flex flex-col gap-2">
             <SidebarMenu>
-              {SIDEBAR_MENU_LIST[userProfile?.role as SidebarMenuKey]?.map(
-                (item) => {
-                  const isActive = pathname === item.url;
-                  return (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={isActive}
-                        tooltip={item.title}
-                        className={cn(
-                          'flex h-auto items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors',
-                          isActive
-                            ? 'bg-ink text-canvas hover:bg-ink/90 hover:text-canvas data-[active=true]:bg-ink data-[active=true]:text-canvas data-[active=true]:hover:bg-ink/90 data-[active=true]:hover:text-canvas'
-                            : 'text-mute hover:text-ink hover:bg-soft-cloud bg-transparent dark:hover:bg-white/10 dark:hover:text-white',
-                        )}
-                      >
-                        <Link href={item.url}>
-                          {item.icon && (
-                            <item.icon className="h-4 w-4 shrink-0" />
-                          )}
-                          <span>{item.title}</span>
-                        </Link>
+              {isLoading
+                ? Array.from({ length: 5 }).map((_, index) => (
+                    <SidebarMenuItem key={index}>
+                      <SidebarMenuButton className="flex h-auto items-center gap-3 rounded-lg bg-transparent px-4 py-3 hover:bg-transparent">
+                        <Skeleton className="h-5 w-5 shrink-0 rounded" />
+                        <Skeleton className="h-5 w-32 rounded" />
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                  );
-                },
-              )}
+                  ))
+                : SIDEBAR_MENU_LIST[userProfile?.role as SidebarMenuKey]?.map(
+                    (item) => {
+                      const isActive = pathname === item.url;
+                      return (
+                        <SidebarMenuItem key={item.title}>
+                          <SidebarMenuButton
+                            asChild
+                            isActive={isActive}
+                            tooltip={item.title}
+                            className={cn(
+                              'flex h-auto items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors',
+                              isActive
+                                ? 'bg-ink text-canvas hover:bg-ink/90 hover:text-canvas data-[active=true]:bg-ink data-[active=true]:text-canvas data-[active=true]:hover:bg-ink/90 data-[active=true]:hover:text-canvas'
+                                : 'text-mute hover:text-ink hover:bg-soft-cloud bg-transparent dark:hover:bg-white/10 dark:hover:text-white',
+                            )}
+                          >
+                            <Link href={item.url}>
+                              {item.icon && (
+                                <item.icon className="h-4 w-4 shrink-0" />
+                              )}
+                              <span>{item.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    },
+                  )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -197,24 +214,37 @@ export default function AppSidebar() {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground w-full items-center justify-between"
                 >
                   <div className="flex items-center gap-2 overflow-hidden">
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage
-                        src={userProfile?.avatar_url}
-                        alt={userProfile?.name}
-                      />
-                      <AvatarFallback className="bg-ink text-canvas rounded-lg font-semibold">
-                        {userProfile?.name
-                          ? getInitials(userProfile.name)
-                          : 'U'}
-                      </AvatarFallback>
-                    </Avatar>
+                    {isLoading ? (
+                      <Skeleton className="h-8 w-8 shrink-0 rounded-lg" />
+                    ) : (
+                      <Avatar className="h-8 w-8 rounded-lg">
+                        <AvatarImage
+                          src={userProfile?.avatar_url}
+                          alt={userProfile?.name}
+                        />
+                        <AvatarFallback className="bg-ink text-canvas rounded-lg font-semibold">
+                          {userProfile?.name
+                            ? getInitials(userProfile.name)
+                            : 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
                     <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                      <span className="truncate font-semibold">
-                        {userProfile?.name || 'Loading...'}
-                      </span>
-                      <span className="text-mute truncate text-xs capitalize">
-                        {userProfile?.role || 'user'}
-                      </span>
+                      {isLoading ? (
+                        <div className="mt-0.5 flex flex-col gap-1.5">
+                          <Skeleton className="h-4 w-20 rounded" />
+                          <Skeleton className="h-3 w-12 rounded" />
+                        </div>
+                      ) : (
+                        <>
+                          <span className="truncate font-semibold">
+                            {userProfile?.name || 'Loading...'}
+                          </span>
+                          <span className="text-mute truncate text-xs capitalize">
+                            {userProfile?.role || 'user'}
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
                   <MoreVertical className="text-mute h-4 w-4 shrink-0 group-data-[collapsible=icon]:hidden" />
