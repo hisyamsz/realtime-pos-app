@@ -1,22 +1,24 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { logoutAction } from "@/app/(auth)/login/action";
+import { useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+import { logoutAction } from '@/app/(auth)/login/action';
 import {
   Store,
-  LayoutDashboard,
-  ShoppingCart,
-  Package,
   Settings,
   User,
   LogOut,
   MoreVertical,
   Loader2,
-} from "lucide-react";
-import Link from "next/link";
-import { toast } from "sonner";
+} from 'lucide-react';
+import Link from 'next/link';
+import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
+import {
+  SIDEBAR_MENU_LIST,
+  SidebarMenuKey,
+} from '@/constants/sidebar-constant';
 
 import {
   Sidebar,
@@ -30,8 +32,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "../ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+} from '../ui/sidebar';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Separator } from '../ui/separator';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,7 +43,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from '../ui/dropdown-menu';
 
 interface UserProfile {
   name: string;
@@ -50,9 +53,9 @@ interface UserProfile {
 
 const getInitials = (name: string) => {
   return name
-    .split(" ")
+    .split(' ')
     .map((n) => n[0])
-    .join("")
+    .join('')
     .substring(0, 2)
     .toUpperCase();
 };
@@ -73,21 +76,21 @@ export default function AppSidebar() {
 
       if (user) {
         const { data: profile } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
           .single();
 
         if (profile) {
           setUserProfile({
-            name: profile.name || profile.full_name || "User",
-            role: profile.role || "",
+            name: profile.name || profile.full_name || 'User',
+            role: profile.role || '',
             avatar_url: profile.avatar_url,
           });
         } else {
           setUserProfile({
-            name: user.email?.split("@")[0] || "User",
-            role: "",
+            name: user.email?.split('@')[0] || 'User',
+            role: '',
             avatar_url: undefined,
           });
         }
@@ -96,49 +99,31 @@ export default function AppSidebar() {
 
     fetchProfile();
   }, []);
-  console.log(userProfile);
+
   const handleLogout = async () => {
     if (isLoggingOut) return;
     setIsLoggingOut(true);
-    document.body.style.cursor = "wait";
+    document.body.style.cursor = 'wait';
     try {
       await logoutAction();
-      toast.success("Logout Berhasil!", {
-        description: "Mengarahkan ke halaman login...",
-        position: "top-right",
+      toast.success('Logout Berhasil!', {
+        description: 'Mengarahkan ke halaman login...',
+        position: 'top-right',
       });
       const callbackUrl = pathname;
-      const url = new URL("/login", window.location.origin);
-      url.searchParams.set("callbackUrl", callbackUrl);
+      const url = new URL('/login', window.location.origin);
+      url.searchParams.set('callbackUrl', callbackUrl);
       router.push(url.pathname + url.search);
     } catch (error) {
-      toast.error("Logout Gagal", {
-        description: "Terjadi kesalahan saat mencoba keluar.",
-        position: "top-right",
+      toast.error('Logout Gagal', {
+        description: 'Terjadi kesalahan saat mencoba keluar.',
+        position: 'top-right',
       });
       setIsLoggingOut(false);
     } finally {
-      document.body.style.cursor = "default";
+      document.body.style.cursor = 'default';
     }
   };
-
-  const navItems = [
-    {
-      title: "Dashboard",
-      url: "/admin",
-      icon: LayoutDashboard,
-    },
-    {
-      title: "Transactions",
-      url: "#",
-      icon: ShoppingCart,
-    },
-    {
-      title: "Products",
-      url: "#",
-      icon: Package,
-    },
-  ];
 
   return (
     <Sidebar collapsible="icon">
@@ -164,26 +149,37 @@ export default function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+      <Separator />
 
-      <SidebarContent>
+      <SidebarContent className="pt-2">
         <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
-          <SidebarGroupContent>
+          <SidebarGroupContent className="flex flex-col gap-2">
             <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === item.url}
-                    tooltip={item.title}
-                  >
-                    <Link href={item.url}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {SIDEBAR_MENU_LIST[userProfile?.role as SidebarMenuKey]?.map(
+                (item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild tooltip={item.title}>
+                      <Link
+                        href={item.url}
+                        className={cn(
+                          'px-4 py-3 h-auto rounded-lg transition-colors flex items-center gap-3',
+                          {
+                            'bg-ink text-canvas hover:bg-ink hover:text-canvas font-medium':
+                              pathname === item.url,
+                            'text-mute hover:text-ink hover:bg-soft-cloud':
+                              pathname !== item.url,
+                          },
+                        )}
+                      >
+                        {item.icon && (
+                          <item.icon className="h-4 w-4 shrink-0" />
+                        )}
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ),
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -207,15 +203,15 @@ export default function AppSidebar() {
                       <AvatarFallback className="rounded-lg bg-ink text-canvas font-semibold">
                         {userProfile?.name
                           ? getInitials(userProfile.name)
-                          : "U"}
+                          : 'U'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                       <span className="truncate font-semibold">
-                        {userProfile?.name || "Loading..."}
+                        {userProfile?.name || 'Loading...'}
                       </span>
                       <span className="truncate text-xs text-mute capitalize">
-                        {userProfile?.role || "user"}
+                        {userProfile?.role || 'user'}
                       </span>
                     </div>
                   </div>
@@ -224,7 +220,7 @@ export default function AppSidebar() {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="w-56 rounded-lg"
-                side={isMobile ? "bottom" : "right"}
+                side={isMobile ? 'bottom' : 'right'}
                 align="end"
                 sideOffset={4}
                 alignOffset={isMobile ? 0 : 8}
@@ -232,10 +228,10 @@ export default function AppSidebar() {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex flex-col space-y-1 p-2">
                     <p className="text-sm font-semibold leading-none truncate">
-                      {userProfile?.name || "Loading..."}
+                      {userProfile?.name || 'Loading...'}
                     </p>
                     <p className="text-xs leading-none text-mute capitalize truncate">
-                      {userProfile?.role || "user"}
+                      {userProfile?.role || 'user'}
                     </p>
                   </div>
                 </DropdownMenuLabel>
@@ -261,7 +257,7 @@ export default function AppSidebar() {
                   ) : (
                     <LogOut className="mr-2 h-4 w-4 text-sale" />
                   )}
-                  <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
+                  <span>{isLoggingOut ? 'Logging out...' : 'Logout'}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
