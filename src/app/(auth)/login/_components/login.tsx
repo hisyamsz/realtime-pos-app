@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Store } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +29,7 @@ import { loginAction as loginServerAction } from "../action";
 
 export default function Login() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loginState, loginAction, isPending] = useActionState(
     loginServerAction,
     INITIAL_STATE_LOGIN_FORM,
@@ -42,25 +43,26 @@ export default function Login() {
   });
 
   useEffect(() => {
-    if (loginState?.status === 'error') {
-      toast.error('Login Failed', {
+    if (loginState?.status === "error") {
+      toast.error("Login Failed", {
         description: loginState.errors?._form?.[0],
-        position: 'top-right',
+        position: "top-right",
       });
       startTransition(() => {
         loginAction(null);
       });
-    } else if (loginState?.status === 'success') {
-      toast.success('Login Berhasil!', {
-        description: 'Mengarahkan ke beranda...',
-        position: 'top-right',
+    } else if (loginState?.status === "success") {
+      const callbackUrl = searchParams.get("callbackUrl");
+      toast.success("Login Berhasil!", {
+        description: "Mengarahkan ke halaman tujuan...",
+        position: "top-right",
       });
       startTransition(() => {
         loginAction(null);
       });
-      router.push('/');
+      router.push(callbackUrl || "/");
     }
-  }, [loginState, router]);
+  }, [loginState, router, searchParams]);
 
   useEffect(() => {
     if (loginState.errors) {
@@ -109,10 +111,12 @@ export default function Login() {
       <div className="absolute top-4 right-4 md:top-8 md:right-8">
         <DarkmodeToggle />
       </div>
-      <Card className="w-full max-w-[500px] rounded-none shadow-none bg-canvas p-4 md:p-8">
+      <Card className="w-full max-w-[500px] shadow-none bg-canvas p-4 md:p-8">
         <CardHeader className="!flex flex-col items-center gap-4 text-center px-0 pt-0">
           <div className="flex items-center justify-center gap-3">
-            <Store className="h-10 w-10 text-foreground" />
+            <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-ink text-canvas">
+              <Store className="size-5" />
+            </div>
             <CardTitle className="text-heading-xl">Omni POS</CardTitle>
           </div>
           <CardDescription className="text-body-md text-muted-foreground mt-2">

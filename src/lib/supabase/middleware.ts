@@ -31,14 +31,15 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (!user && request.nextUrl.pathname !== "/login") {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    const url = new URL("/login", request.url);
+    const callbackUrl = request.nextUrl.pathname + request.nextUrl.search;
+    url.searchParams.set("callbackUrl", callbackUrl);
     return NextResponse.redirect(url);
   }
 
   if (user && request.nextUrl.pathname === "/login") {
-    const url = request.nextUrl.clone();
-    url.pathname = "/";
+    const callbackUrl = request.nextUrl.searchParams.get("callbackUrl");
+    const url = new URL(callbackUrl || "/", request.url);
     return NextResponse.redirect(url);
   }
 

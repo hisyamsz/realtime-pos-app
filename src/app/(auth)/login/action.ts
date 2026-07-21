@@ -91,3 +91,13 @@ export async function loginAction(
     errors: {},
   };
 }
+
+export async function logoutAction() {
+  const supabase = await createClient({});
+  await supabase.auth.signOut();
+  
+  const cookiesStore = await cookies();
+  cookiesStore.delete("user_profile");
+  
+  revalidatePath("/", "layout");
+}
