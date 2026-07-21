@@ -1,14 +1,14 @@
-import { DarkmodeToggle } from "@/components/common/darkmode-toggle";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Link as LucideLink } from "lucide-react";
-import { Metadata } from "next";
-import Link from "next/link";
+import { DarkmodeToggle } from '@/components/common/darkmode-toggle';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Link as LucideLink } from 'lucide-react';
+import { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: "Realtime POS Apps",
-  description: "",
+  title: 'Realtime POS Apps',
+  description: '',
 };
 
 export default function Home() {

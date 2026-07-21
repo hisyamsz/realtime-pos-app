@@ -11,29 +11,29 @@ description: |
   for the light mode's soft-cloud stage.
 
 colors:
-  primary: "#ffffff"
-  on-primary: "#111111"
-  canvas: "#111111"
-  soft-cloud: "#1c1c1e"
-  ink: "#ffffff"
-  charcoal: "#e4e4e6"
-  ash: "#c7c7c9"
-  mute: "#9e9ea0"
-  stone: "#707072"
-  hairline: "#3a3a3c"
-  hairline-soft: "#2c2c2e"
-  sale: "#ff4d4f"
-  sale-deep: "#ff8a8b"
-  success: "#30d158"
-  success-bright: "#6ee68a"
-  info: "#5c8aff"
-  info-deep: "#8fabff"
-  accent-pink: "#ff4dc4"
-  accent-pink-soft: "#ffb0dd"
-  accent-purple-soft: "#c9bbff"
-  accent-purple-pale: "#a89bfd"
-  accent-teal: "#3fb6c9"
-  accent-pink-deep: "#ff9fd6"
+  primary: '#ffffff'
+  on-primary: '#111111'
+  canvas: '#111111'
+  soft-cloud: '#1c1c1e'
+  ink: '#ffffff'
+  charcoal: '#e4e4e6'
+  ash: '#c7c7c9'
+  mute: '#9e9ea0'
+  stone: '#707072'
+  hairline: '#3a3a3c'
+  hairline-soft: '#2c2c2e'
+  sale: '#ff4d4f'
+  sale-deep: '#ff8a8b'
+  success: '#30d158'
+  success-bright: '#6ee68a'
+  info: '#5c8aff'
+  info-deep: '#8fabff'
+  accent-pink: '#ff4dc4'
+  accent-pink-soft: '#ffb0dd'
+  accent-purple-soft: '#c9bbff'
+  accent-purple-pale: '#a89bfd'
+  accent-teal: '#3fb6c9'
+  accent-pink-deep: '#ff9fd6'
 
 typography:
   display-campaign:
@@ -136,143 +136,143 @@ spacing:
 
 components:
   button-primary:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.ink}'
+    textColor: '{colors.on-primary}'
+    typography: '{typography.button-md}'
+    rounded: '{rounded.full}'
     padding: 16px 32px
     height: 48px
   button-primary-active:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.ink}'
+    textColor: '{colors.on-primary}'
+    typography: '{typography.button-md}'
+    rounded: '{rounded.full}'
   button-secondary:
-    backgroundColor: "{colors.soft-cloud}"
-    textColor: "{colors.ink}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.soft-cloud}'
+    textColor: '{colors.ink}'
+    typography: '{typography.button-md}'
+    rounded: '{rounded.full}'
     padding: 16px 32px
     height: 48px
   button-outline-on-image:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.button-md}'
+    rounded: '{rounded.full}'
     padding: 12px 24px
   button-icon-circular:
-    backgroundColor: "{colors.soft-cloud}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.soft-cloud}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.full}'
     size: 40px
   search-pill:
-    backgroundColor: "{colors.soft-cloud}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.soft-cloud}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-md}'
+    rounded: '{rounded.md}'
     padding: 8px 16px
     height: 40px
   search-pill-focused:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.md}'
   form-input:
-    backgroundColor: "transparent"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.sm}"
+    backgroundColor: 'transparent'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-md}'
+    rounded: '{rounded.sm}'
     padding: 16px
     height: 48px
   form-input-focused:
-    backgroundColor: "transparent"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.sm}"
+    backgroundColor: 'transparent'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.sm}'
   filter-chip:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.button-md}'
+    rounded: '{rounded.full}'
     padding: 8px 16px
   filter-chip-active:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.ink}'
+    textColor: '{colors.on-primary}'
+    typography: '{typography.button-md}'
+    rounded: '{rounded.full}'
   badge-promo:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.caption-sm}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.caption-sm}'
+    rounded: '{rounded.full}'
     padding: 4px 12px
   badge-sale-text:
-    textColor: "{colors.sale}"
-    typography: "{typography.caption-md}"
+    textColor: '{colors.sale}'
+    typography: '{typography.caption-md}'
   product-card:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-strong}"
-    rounded: "{rounded.none}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-strong}'
+    rounded: '{rounded.none}'
     padding: 0px
   product-card-image:
-    backgroundColor: "{colors.soft-cloud}"
-    rounded: "{rounded.none}"
+    backgroundColor: '{colors.soft-cloud}'
+    rounded: '{rounded.none}'
   swatch-dot:
-    backgroundColor: "{colors.ink}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.ink}'
+    rounded: '{rounded.full}'
     size: 12px
   swatch-dot-active:
-    backgroundColor: "{colors.ink}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.ink}'
+    rounded: '{rounded.full}'
     size: 12px
   campaign-tile:
-    backgroundColor: "{colors.soft-cloud}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.display-campaign}"
-    rounded: "{rounded.none}"
+    backgroundColor: '{colors.soft-cloud}'
+    textColor: '{colors.on-primary}'
+    typography: '{typography.display-campaign}'
+    rounded: '{rounded.none}'
   category-icon-card:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.caption-md}"
-    rounded: "{rounded.none}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.caption-md}'
+    rounded: '{rounded.none}'
   member-benefit-card:
-    backgroundColor: "{colors.soft-cloud}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.heading-lg}"
-    rounded: "{rounded.none}"
+    backgroundColor: '{colors.soft-cloud}'
+    textColor: '{colors.on-primary}'
+    typography: '{typography.heading-lg}'
+    rounded: '{rounded.none}'
   faq-row:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.heading-md}"
-    rounded: "{rounded.none}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.heading-md}'
+    rounded: '{rounded.none}'
     padding: 24px 0px
   pdp-disclosure-row:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-strong}"
-    rounded: "{rounded.none}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-strong}'
+    rounded: '{rounded.none}'
     padding: 24px 0px
   utility-bar:
-    backgroundColor: "{colors.soft-cloud}"
-    textColor: "{colors.ink}"
-    typography: "{typography.caption-sm}"
-    rounded: "{rounded.none}"
+    backgroundColor: '{colors.soft-cloud}'
+    textColor: '{colors.ink}'
+    typography: '{typography.caption-sm}'
+    rounded: '{rounded.none}'
     height: 36px
   primary-nav:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-strong}"
-    rounded: "{rounded.none}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-strong}'
+    rounded: '{rounded.none}'
     height: 56px
   filter-sidebar:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-strong}"
-    rounded: "{rounded.none}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-strong}'
+    rounded: '{rounded.none}'
   footer:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.mute}"
-    typography: "{typography.caption-md}"
-    rounded: "{rounded.none}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.mute}'
+    typography: '{typography.caption-md}'
+    rounded: '{rounded.none}'
 ---
 
 ## Overview

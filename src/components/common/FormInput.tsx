@@ -1,20 +1,20 @@
-import { ReactNode, Ref } from "react";
+import { ReactNode, Ref } from 'react';
 import {
   Control,
   FieldPath,
   FieldValues,
   ControllerRenderProps,
   ControllerFieldState,
-} from "react-hook-form";
+} from 'react-hook-form';
 import {
   FormField,
   FormItem,
   FormLabel,
   FormControl,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { BaseFormInputProps } from "@/types/form";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { BaseFormInputProps } from '@/types/form';
 
 export interface FormInputProps<
   TFieldValues extends FieldValues = FieldValues,

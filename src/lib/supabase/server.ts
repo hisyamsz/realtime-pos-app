@@ -1,6 +1,6 @@
-import { environment } from "@/configs/environment";
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { environment } from '@/configs/environment';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 type CreateClientOptions = {
   isAdmin?: boolean;
@@ -25,7 +25,7 @@ export async function createClient({ isAdmin = false }: CreateClientOptions) {
               cookieStore.set(name, value, options),
             );
           } catch {
-            console.error("Error setting cookies", cookiesToSet);
+            console.error('Error setting cookies', cookiesToSet);
           }
         },
       },

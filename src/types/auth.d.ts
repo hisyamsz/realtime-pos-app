@@ -1,7 +1,7 @@
-import { LoginForm } from "@/validation/auth-validation";
+import { LoginForm } from '@/validation/auth-validation';
 
 export interface LoginFormState {
-  status: "idle" | "loading" | "success" | "error";
+  status: 'idle' | 'loading' | 'success' | 'error';
   errors: {
     email?: string[];
     password?: string[];

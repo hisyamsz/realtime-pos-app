@@ -1,4 +1,4 @@
-import { LoginFormState } from "@/types/auth";
+import { LoginFormState } from '@/types/auth';
 
 export const INITIAL_LOGIN_FORM = {
   email: '',

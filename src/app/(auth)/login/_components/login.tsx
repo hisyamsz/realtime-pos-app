@@ -1,31 +1,31 @@
-"use client";
+'use client';
 
-import { useActionState, useEffect, useState, startTransition } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Store } from "lucide-react";
-import { toast } from "sonner";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useActionState, useEffect, useState, startTransition } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Store } from 'lucide-react';
+import { toast } from 'sonner';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Form } from "@/components/ui/form";
+} from '@/components/ui/card';
+import { Form } from '@/components/ui/form';
 
 import {
   INITIAL_LOGIN_FORM,
   INITIAL_STATE_LOGIN_FORM,
-} from "@/constants/auth-constants";
-import { loginSchema, type LoginForm } from "@/validation/auth-validation";
-import { PasswordInput } from "@/components/common/password-input";
-import { FormInput } from "@/components/common/FormInput";
-import { DarkmodeToggle } from "@/components/common/darkmode-toggle";
-import { loginAction as loginServerAction } from "../action";
+} from '@/constants/auth-constants';
+import { loginSchema, type LoginForm } from '@/validation/auth-validation';
+import { PasswordInput } from '@/components/common/password-input';
+import { FormInput } from '@/components/common/FormInput';
+import { DarkmodeToggle } from '@/components/common/darkmode-toggle';
+import { loginAction as loginServerAction } from '../action';
 
 export default function Login() {
   const router = useRouter();
@@ -43,38 +43,38 @@ export default function Login() {
   });
 
   useEffect(() => {
-    if (loginState?.status === "error") {
-      toast.error("Login Failed", {
+    if (loginState?.status === 'error') {
+      toast.error('Login Failed', {
         description: loginState.errors?._form?.[0],
-        position: "top-right",
+        position: 'top-right',
       });
       startTransition(() => {
         loginAction(null);
       });
-    } else if (loginState?.status === "success") {
-      const callbackUrl = searchParams.get("callbackUrl");
-      toast.success("Login Berhasil!", {
-        description: "Mengarahkan ke halaman tujuan...",
-        position: "top-right",
+    } else if (loginState?.status === 'success') {
+      const callbackUrl = searchParams.get('callbackUrl');
+      toast.success('Login Berhasil!', {
+        description: 'Mengarahkan ke halaman tujuan...',
+        position: 'top-right',
       });
       startTransition(() => {
         loginAction(null);
       });
-      router.push(callbackUrl || "/");
+      router.push(callbackUrl || '/');
     }
   }, [loginState, router, searchParams]);
 
   useEffect(() => {
     if (loginState.errors) {
       if (loginState.errors.email && loginState.errors.email.length > 0) {
-        form.setError("email", {
-          type: "server",
+        form.setError('email', {
+          type: 'server',
           message: loginState.errors.email[0],
         });
       }
       if (loginState.errors.password && loginState.errors.password.length > 0) {
-        form.setError("password", {
-          type: "server",
+        form.setError('password', {
+          type: 'server',
           message: loginState.errors.password[0],
         });
       }
@@ -98,8 +98,8 @@ export default function Login() {
 
   const onSubmit = async (data: LoginForm) => {
     const formData = new FormData();
-    formData.append("email", data.email);
-    formData.append("password", data.password);
+    formData.append('email', data.email);
+    formData.append('password', data.password);
 
     startTransition(() => {
       loginAction(formData);
@@ -158,7 +158,7 @@ export default function Login() {
                 className="w-full mt-4"
                 disabled={isPending}
               >
-                {isPending ? "Signing In..." : "Sign In"}
+                {isPending ? 'Signing In...' : 'Sign In'}
               </Button>
             </form>
           </Form>

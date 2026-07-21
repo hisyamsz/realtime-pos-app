@@ -1,6 +1,6 @@
-import { environment } from "@/configs/environment";
-import { createServerClient } from "@supabase/ssr";
-import { NextRequest, NextResponse } from "next/server";
+import { environment } from '@/configs/environment';
+import { createServerClient } from '@supabase/ssr';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -30,16 +30,16 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user && request.nextUrl.pathname !== "/login") {
-    const url = new URL("/login", request.url);
+  if (!user && request.nextUrl.pathname !== '/login') {
+    const url = new URL('/login', request.url);
     const callbackUrl = request.nextUrl.pathname + request.nextUrl.search;
-    url.searchParams.set("callbackUrl", callbackUrl);
+    url.searchParams.set('callbackUrl', callbackUrl);
     return NextResponse.redirect(url);
   }
 
-  if (user && request.nextUrl.pathname === "/login") {
-    const callbackUrl = request.nextUrl.searchParams.get("callbackUrl");
-    const url = new URL(callbackUrl || "/", request.url);
+  if (user && request.nextUrl.pathname === '/login') {
+    const callbackUrl = request.nextUrl.searchParams.get('callbackUrl');
+    const url = new URL(callbackUrl || '/', request.url);
     return NextResponse.redirect(url);
   }
 

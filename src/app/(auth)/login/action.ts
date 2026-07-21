@@ -1,10 +1,10 @@
-"use server";
+'use server';
 
-import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
-import { loginSchema } from "@/validation/auth-validation";
-import { createClient } from "@/lib/supabase/server";
-import { LoginFormState } from "@/types/auth";
+import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
+import { loginSchema } from '@/validation/auth-validation';
+import { createClient } from '@/lib/supabase/server';
+import { LoginFormState } from '@/types/auth';
 
 export async function loginAction(
   prevState: LoginFormState,
@@ -12,7 +12,7 @@ export async function loginAction(
 ): Promise<LoginFormState> {
   if (!formData) {
     return {
-      status: "idle",
+      status: 'idle',
       errors: {
         email: [],
         password: [],
@@ -21,8 +21,8 @@ export async function loginAction(
     };
   }
 
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
 
   const validatedFields = loginSchema.safeParse({
     email,
@@ -32,7 +32,7 @@ export async function loginAction(
   if (!validatedFields.success) {
     const fieldErrors = validatedFields.error.flatten().fieldErrors;
     return {
-      status: "error",
+      status: 'error',
       errors: {
         email: fieldErrors.email || [],
         password: fieldErrors.password || [],
@@ -51,7 +51,7 @@ export async function loginAction(
 
     if (error) {
       return {
-        status: "error",
+        status: 'error',
         errors: {
           ...prevState.errors,
           _form: [error.message],
@@ -60,34 +60,34 @@ export async function loginAction(
     }
 
     const { data: profile } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user?.id)
+      .from('profiles')
+      .select('*')
+      .eq('id', user?.id)
       .single();
 
     if (profile) {
       const cookiesStore = await cookies();
-      cookiesStore.set("user_profile", JSON.stringify(profile), {
+      cookiesStore.set('user_profile', JSON.stringify(profile), {
         httpOnly: true,
-        path: "/",
-        sameSite: "lax",
+        path: '/',
+        sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 365,
       });
     }
   } catch (err: any) {
     return {
-      status: "error",
+      status: 'error',
       errors: {
         ...prevState.errors,
-        _form: [err?.message || "An unexpected error occurred"],
+        _form: [err?.message || 'An unexpected error occurred'],
       },
     };
   }
 
-  revalidatePath("/", "layout");
+  revalidatePath('/', 'layout');
   return {
-    status: "success",
-    message: "Login successful",
+    status: 'success',
+    message: 'Login successful',
     errors: {},
   };
 }
@@ -95,9 +95,9 @@ export async function loginAction(
 export async function logoutAction() {
   const supabase = await createClient({});
   await supabase.auth.signOut();
-  
+
   const cookiesStore = await cookies();
-  cookiesStore.delete("user_profile");
-  
-  revalidatePath("/", "layout");
+  cookiesStore.delete('user_profile');
+
+  revalidatePath('/', 'layout');
 }
