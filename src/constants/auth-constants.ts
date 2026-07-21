@@ -1,4 +1,4 @@
-import { LoginFormState } from '@/types/auth';
+import { LoginFormState, Profile } from '@/types/auth';
 
 export const INITIAL_LOGIN_FORM = {
   email: '',
@@ -13,3 +13,11 @@ export const INITIAL_STATE_LOGIN_FORM: LoginFormState = {
     _form: [],
   },
 };
+
+export const INITIAL_STATE_PROFILE: Profile = {
+  id: '',
+  name: '',
+  avatar_url: '',
+  role: '',
+};
+
