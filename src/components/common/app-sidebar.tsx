@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { logoutAction } from '@/app/(auth)/login/action';
+import { logoutAction } from '@/actions/auth-action';
 import {
   Store,
   Settings,
