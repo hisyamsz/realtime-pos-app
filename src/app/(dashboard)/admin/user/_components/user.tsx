@@ -17,11 +17,11 @@ export default function UserManagment() {
     error,
     refetch,
   } = useQuery({
-    queryKey: ['profiles'],
+    queryKey: ['users'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('*', { count: 'exact' })
         .order('created_at', { ascending: false });
 
       if (error) {
