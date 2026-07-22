@@ -101,7 +101,6 @@ export default function Login() {
     });
   };
 
-
   return (
     <div className="bg-soft-cloud relative flex min-h-screen items-center justify-center p-4 md:p-8">
       <div className="absolute top-4 right-4 md:top-8 md:right-8">

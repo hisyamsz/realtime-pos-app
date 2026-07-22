@@ -353,16 +353,16 @@ src/
 
 ### 11.2 Dashboard
 
-- `/dashboard/admin` — Admin Dashboard
-- `/dashboard/cashier` — Cashier Dashboard
-- `/dashboard/kitchen` — Kitchen Dashboard
+- `/admin` — Admin Dashboard
+- `/cashier` — Cashier Dashboard
+- `/kitchen` — Kitchen Dashboard
 
 ### 11.3 Master Data
 
-- `/dashboard/users` — User Management
-- `/dashboard/menus` — Menu Management
-- `/dashboard/categories` — Category Management
-- `/dashboard/tables` — Table Management
+- `/admin/users` — User Management
+- `/admin/menus` — Menu Management
+- `/admin/categories` — Category Management
+- `/admin/tables` — Table Management
 
 ### 11.4 Transaction
 

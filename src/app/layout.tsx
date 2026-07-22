@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/providers/themes-provider';
 import { AuthStoreProvider } from '@/providers/auth-store-provider';
+import ReactQueryProvider from '@/providers/react-query-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { cookies } from 'next/headers';
 import { Profile } from '@/types/auth';
@@ -41,18 +42,19 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthStoreProvider initialProfile={initialProfile}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-            <Toaster position="top-right" richColors closeButton />
-          </ThemeProvider>
+          <ReactQueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+              <Toaster position="top-right" richColors closeButton />
+            </ThemeProvider>
+          </ReactQueryProvider>
         </AuthStoreProvider>
       </body>
     </html>
   );
 }
-

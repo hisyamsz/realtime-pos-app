@@ -20,4 +20,3 @@ export const INITIAL_STATE_PROFILE: Profile = {
   avatar_url: '',
   role: '',
 };
-
