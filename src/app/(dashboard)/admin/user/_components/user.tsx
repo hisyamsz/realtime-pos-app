@@ -7,18 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { TableRow, TableCell } from '@/components/ui/table';
-import { Search, UserPlus, Edit, Trash2, MoreVertical } from 'lucide-react';
+import { Search, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-
 import DataTable from '@/components/common/data-table';
+import DropdownAction from '@/components/common/dropdown-action';
 import { HEADER_TABLE_USER } from '@/constants/user-constants';
 import { DEFAULT_PAGE_LIMIT } from '@/constants/data-table-constants';
 
@@ -87,29 +80,11 @@ export default function UserManagment() {
         >
           {user.role || 'user'}
         </Badge>,
-        <DropdownMenu key={`action-${user.id}`}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              className="cursor-pointer text-blue-600 focus:bg-blue-50 focus:text-blue-700"
-              onClick={() => handleEdit(user.id)}
-            >
-              <Edit className="mr-2 h-4 w-4 text-blue-600" />
-              <span>Edit</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700"
-              onClick={() => handleDelete(user.id)}
-            >
-              <Trash2 className="mr-2 h-4 w-4 text-red-600" />
-              <span>Delete</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>,
+        <DropdownAction
+          key={`action-${user.id}`}
+          onEdit={() => handleEdit(user.id)}
+          onDelete={() => handleDelete(user.id)}
+        />,
       ];
     });
   }, [users?.profiles, page, limit]);
