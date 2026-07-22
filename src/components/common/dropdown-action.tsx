@@ -23,7 +23,7 @@ export default function DropdownAction({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="text-muted-foreground size-8"
+          className="text-muted-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground size-8"
           size="icon"
         >
           <EllipsisVertical />

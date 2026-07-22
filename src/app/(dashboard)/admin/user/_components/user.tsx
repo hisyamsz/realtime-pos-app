@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -22,12 +22,11 @@ export default function UserManagment() {
   const {
     currentPage: page,
     currentLimit: limit,
+    currentSearch,
+    handleChangeSearch,
     handleChangePage,
     handleChangeLimit,
-    setCurrentPage,
   } = useDataTable();
-
-  const [search, setSearch] = useState('');
 
   const handleEdit = (id: string) => {
     console.log('Edit user ID:', id);
@@ -44,12 +43,12 @@ export default function UserManagment() {
     error: fetchError,
     refetch,
   } = useQuery({
-    queryKey: ['users', page, limit, search],
+    queryKey: ['users', page, limit, currentSearch],
     queryFn: async () => {
       let query = supabase.from('profiles').select('*', { count: 'exact' });
 
-      if (search) {
-        query = query.ilike('name', `%${search}%`);
+      if (currentSearch) {
+        query = query.ilike('name', `%${currentSearch}%`);
       }
 
       const { data, error, count } = await query
@@ -67,22 +66,14 @@ export default function UserManagment() {
   });
 
   const totalPages = useMemo(() => {
-    return users && users.count !== null
-      ? Math.ceil(users.count / limit)
-      : 0;
+    return users && users.count !== null ? Math.ceil(users.count / limit) : 0;
   }, [users, limit]);
 
   const filteredData = useMemo(() => {
     return (users?.profiles || []).map((user, index) => {
       return [
         (page - 1) * limit + index + 1,
-        <span
-          key={`id-${user.id}`}
-          className="inline-block font-medium"
-          title={user.id}
-        >
-          {user.id}
-        </span>,
+        user.id,
         user.name || 'Unknown Name',
         <Badge
           key={`role-${user.id}`}
@@ -122,17 +113,13 @@ export default function UserManagment() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-        <div className="relative w-full sm:w-128">
+        <div className="relative w-full sm:w-2/5">
           <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" />
           <Input
             type="search"
             placeholder="Search by name.."
             className="w-full pl-8"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(DEFAULT_PAGE);
-            }}
+            onChange={(e) => handleChangeSearch(e.target.value)}
           />
         </div>
 

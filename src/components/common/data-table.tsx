@@ -129,7 +129,7 @@ export default function DataTable<T>({
       </Card>
 
       {pagination && (
-        <div className="flex flex-col-reverse items-center justify-between gap-4 py-2 sm:flex-row">
+        <div className="flex flex-col-reverse items-center justify-between gap-4 sm:flex-row">
           <div className="hidden items-center gap-2 text-sm md:flex">
             <p className="text-muted-foreground">Limit:</p>
             <Select
