@@ -50,7 +50,7 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               {children}
-              <Toaster position="top-right" richColors closeButton />
+              <Toaster position="top-right" richColors />
             </ThemeProvider>
           </ReactQueryProvider>
         </AuthStoreProvider>
