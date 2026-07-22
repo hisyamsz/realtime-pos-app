@@ -7,6 +7,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "../ui/pagination";
+import { DEFAULT_PAGE } from "@/constants/data-table-constants";
 
 interface PaginationDataTableProps {
   totalPages: number;
@@ -25,12 +26,12 @@ export default function PaginationDataTable({
         <PaginationItem>
           <PaginationPrevious
             className={
-              currentPage <= 1
+              currentPage <= DEFAULT_PAGE
                 ? "pointer-events-none opacity-50"
                 : "cursor-pointer"
             }
             onClick={() => {
-              if (currentPage > 1) {
+              if (currentPage > DEFAULT_PAGE) {
                 onChangePage(currentPage - 1);
               }
             }}
@@ -40,7 +41,7 @@ export default function PaginationDataTable({
         {Array.from({ length: totalPages }).map((_, index) => {
           const page = index + 1;
           if (
-            page === 1 ||
+            page === DEFAULT_PAGE ||
             page === totalPages ||
             Math.abs(currentPage - page) <= 1
           ) {
@@ -60,7 +61,7 @@ export default function PaginationDataTable({
           }
 
           if (
-            (page === currentPage - 2 && page > 1) ||
+            (page === currentPage - 2 && page > DEFAULT_PAGE) ||
             (page === currentPage + 2 && page < totalPages)
           ) {
             return (

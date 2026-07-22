@@ -13,12 +13,15 @@ import { toast } from 'sonner';
 import DataTable from '@/components/common/data-table';
 import DropdownAction from '@/components/common/dropdown-action';
 import { HEADER_TABLE_USER } from '@/constants/user-constants';
-import { DEFAULT_PAGE_LIMIT } from '@/constants/data-table-constants';
+import {
+  DEFAULT_PAGE,
+  DEFAULT_PAGE_LIMIT,
+} from '@/constants/data-table-constants';
 
 export default function UserManagment() {
   const supabase = createClient();
 
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(DEFAULT_PAGE);
   const [limit, setLimit] = useState(DEFAULT_PAGE_LIMIT);
   const [search, setSearch] = useState('');
 
@@ -120,7 +123,7 @@ export default function UserManagment() {
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
-              setPage(1);
+              setPage(DEFAULT_PAGE);
             }}
           />
         </div>
@@ -149,13 +152,13 @@ export default function UserManagment() {
         emptyMessage="No users found."
         pagination={{
           currentPage: page,
-          totalPages: Math.max(1, totalPages),
+          totalPages: Math.max(DEFAULT_PAGE, totalPages),
           totalCount: users?.count || 0,
           limit: limit,
           onPageChange: (newPage) => setPage(newPage),
           onLimitChange: (newLimit) => {
             setLimit(newLimit);
-            setPage(1);
+            setPage(DEFAULT_PAGE);
           },
         }}
       />
