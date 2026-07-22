@@ -89,4 +89,3 @@ export async function loginAction(
   revalidatePath('/', 'layout');
   redirect(callbackUrl);
 }
-

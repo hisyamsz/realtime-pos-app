@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Omni POS | Admin',
+  title: 'Admin Dashboard | Omni POS',
 };
 
 export default function DashboardPage() {
