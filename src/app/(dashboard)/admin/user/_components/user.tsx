@@ -1,35 +1,112 @@
 'use client';
 
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import { Search, UserPlus } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Search, UserPlus, Edit, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+
+import DataTable from '@/components/common/data-table';
+import DropdownAction from '@/components/common/dropdown-action';
+import { HEADER_TABLE_USER } from '@/constants/user-constants';
+import { DEFAULT_PAGE_LIMIT } from '@/constants/data-table-constants';
 
 export default function UserManagment() {
   const supabase = createClient();
 
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(DEFAULT_PAGE_LIMIT);
+  const [search, setSearch] = useState('');
+
+  const handleEdit = (id: string) => {
+    console.log('Edit user ID:', id);
+  };
+
+  const handleDelete = (id: string) => {
+    console.log('Delete user ID:', id);
+  };
+
   const {
-    data: profiles,
+    data: users,
     isLoading,
     isError,
     error,
     refetch,
   } = useQuery({
-    queryKey: ['users'],
+    queryKey: ['users', page, limit, search],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*', { count: 'exact' })
-        .order('created_at', { ascending: false });
+      let query = supabase.from('profiles').select('*', { count: 'exact' });
+
+      if (search) {
+        query = query.ilike('name', `%${search}%`);
+      }
+
+      const { data, error, count } = await query
+        .order('created_at', { ascending: false })
+        .range((page - 1) * limit, page * limit - 1);
 
       if (error) {
+        toast.error(`Failed to load users`, {
+          description: error.message,
+        });
         throw error;
       }
-      return data;
+      return { profiles: data, count };
     },
   });
+
+  const totalPages = Math.ceil((users?.count || 0) / limit);
+
+  const filteredData = useMemo(() => {
+    return (users?.profiles || []).map((user, index) => {
+      return [
+        (page - 1) * limit + index + 1,
+        <span
+          key={`id-${user.id}`}
+          className="inline-block font-medium"
+          title={user.id}
+        >
+          {user.id}
+        </span>,
+        user.name || 'Unknown Name',
+        <Badge
+          key={`role-${user.id}`}
+          variant={user.role === 'admin' ? 'default' : 'outline'}
+          className="capitalize"
+        >
+          {user.role || 'user'}
+        </Badge>,
+        <DropdownAction
+          key={`action-${user.id}`}
+          menu={[
+            {
+              label: (
+                <span className="flex items-center gap-2 text-blue-600">
+                  <Edit className="h-4 w-4 text-blue-600" />
+                  Edit
+                </span>
+              ),
+              action: () => handleEdit(user.id),
+            },
+            {
+              label: (
+                <span className="flex items-center gap-2">
+                  <Trash2 className="h-4 w-4 text-red-500" />
+                  Delete
+                </span>
+              ),
+              variant: 'destructive',
+              action: () => handleDelete(user.id),
+            },
+          ]}
+        />,
+      ];
+    });
+  }, [users?.profiles, page, limit]);
 
   return (
     <div className="space-y-4">
@@ -40,6 +117,11 @@ export default function UserManagment() {
             type="search"
             placeholder="Search by name.."
             className="w-full pl-8"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
           />
         </div>
 
@@ -57,57 +139,26 @@ export default function UserManagment() {
         </Dialog>
       </div>
 
-      <div className="rounded-md border p-4">
-        {isLoading && (
-          <div className="flex h-32 items-center justify-center">
-            <p className="text-muted-foreground text-sm">Loading users...</p>
-          </div>
-        )}
-
-        {isError && (
-          <div className="flex h-32 flex-col items-center justify-center gap-2 text-red-500">
-            <p className="text-sm">
-              Error loading users:{' '}
-              {error instanceof Error ? error.message : 'Unknown error'}
-            </p>
-            <button
-              onClick={() => refetch()}
-              className="text-sm font-medium underline underline-offset-4 hover:text-red-600"
-            >
-              Try again
-            </button>
-          </div>
-        )}
-
-        {profiles && profiles.length === 0 && (
-          <div className="flex h-32 items-center justify-center">
-            <p className="text-muted-foreground text-sm">No users found.</p>
-          </div>
-        )}
-
-        {profiles && profiles.length > 0 && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {profiles.map((profile) => (
-              <div
-                key={profile.id}
-                className="hover:bg-accent hover:text-accent-foreground flex flex-col gap-2 rounded-lg border p-4 transition-all"
-              >
-                <div className="flex items-center justify-between">
-                  <p className="text-sm leading-none font-medium">
-                    {profile.name || 'Unknown Name'}
-                  </p>
-                  <span className="focus:ring-ring inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none">
-                    {profile.role || 'user'}
-                  </span>
-                </div>
-                <p className="text-muted-foreground text-xs">
-                  Joined: {new Date(profile.created_at).toLocaleDateString()}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <DataTable
+        headers={HEADER_TABLE_USER}
+        data={filteredData}
+        isLoading={isLoading}
+        isError={isError}
+        errorMessage={error instanceof Error ? error.message : 'Unknown error'}
+        onRetry={() => refetch()}
+        emptyMessage="No users found."
+        pagination={{
+          currentPage: page,
+          totalPages: Math.max(1, totalPages),
+          totalCount: users?.count || 0,
+          limit: limit,
+          onPageChange: (newPage) => setPage(newPage),
+          onLimitChange: (newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          },
+        }}
+      />
     </div>
   );
 }
