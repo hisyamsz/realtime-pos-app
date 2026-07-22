@@ -2,7 +2,7 @@
 
 import { forwardRef, ForwardedRef, useState, ReactElement } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { FormInput } from '@/components/common/FormInput';
+import { FormInput } from '@/components/common/form-input';
 import { Input } from '@/components/ui/input';
 import { BaseFormInputProps } from '@/types/form';
 import { cn } from '@/lib/utils';

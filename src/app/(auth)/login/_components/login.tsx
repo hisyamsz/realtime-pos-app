@@ -23,7 +23,7 @@ import {
 } from '@/constants/auth-constants';
 import { loginSchema, type LoginForm } from '@/validation/auth-validation';
 import { PasswordInput } from '@/components/common/password-input';
-import { FormInput } from '@/components/common/FormInput';
+import { FormInput } from '@/components/common/form-input';
 import { DarkmodeToggle } from '@/components/common/darkmode-toggle';
 import { loginAction as loginServerAction } from '../action';
 

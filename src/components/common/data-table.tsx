@@ -21,7 +21,6 @@ import { LIMIT_OPTIONS } from '@/constants/data-table-constants';
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  totalCount?: number;
   limit: number;
   limitOptions?: number[];
   onPageChange: (page: number) => void;

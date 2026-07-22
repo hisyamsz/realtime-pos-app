@@ -13,16 +13,20 @@ import { toast } from 'sonner';
 import DataTable from '@/components/common/data-table';
 import DropdownAction from '@/components/common/dropdown-action';
 import { HEADER_TABLE_USER } from '@/constants/user-constants';
-import {
-  DEFAULT_PAGE,
-  DEFAULT_PAGE_LIMIT,
-} from '@/constants/data-table-constants';
+import { DEFAULT_PAGE } from '@/constants/data-table-constants';
+import useDataTable from '@/hooks/use-data-table';
 
 export default function UserManagment() {
   const supabase = createClient();
 
-  const [page, setPage] = useState(DEFAULT_PAGE);
-  const [limit, setLimit] = useState(DEFAULT_PAGE_LIMIT);
+  const {
+    currentPage: page,
+    currentLimit: limit,
+    handleChangePage,
+    handleChangeLimit,
+    setCurrentPage,
+  } = useDataTable();
+
   const [search, setSearch] = useState('');
 
   const handleEdit = (id: string) => {
@@ -37,7 +41,7 @@ export default function UserManagment() {
     data: users,
     isLoading,
     isError,
-    error,
+    error: fetchError,
     refetch,
   } = useQuery({
     queryKey: ['users', page, limit, search],
@@ -62,7 +66,11 @@ export default function UserManagment() {
     },
   });
 
-  const totalPages = Math.ceil((users?.count || 0) / limit);
+  const totalPages = useMemo(() => {
+    return users && users.count !== null
+      ? Math.ceil(users.count / limit)
+      : 0;
+  }, [users, limit]);
 
   const filteredData = useMemo(() => {
     return (users?.profiles || []).map((user, index) => {
@@ -123,7 +131,7 @@ export default function UserManagment() {
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
-              setPage(DEFAULT_PAGE);
+              setCurrentPage(DEFAULT_PAGE);
             }}
           />
         </div>
@@ -147,19 +155,17 @@ export default function UserManagment() {
         data={filteredData}
         isLoading={isLoading}
         isError={isError}
-        errorMessage={error instanceof Error ? error.message : 'Unknown error'}
+        errorMessage={
+          fetchError instanceof Error ? fetchError.message : 'Unknown error'
+        }
         onRetry={() => refetch()}
         emptyMessage="No users found."
         pagination={{
           currentPage: page,
           totalPages: Math.max(DEFAULT_PAGE, totalPages),
-          totalCount: users?.count || 0,
           limit: limit,
-          onPageChange: (newPage) => setPage(newPage),
-          onLimitChange: (newLimit) => {
-            setLimit(newLimit);
-            setPage(DEFAULT_PAGE);
-          },
+          onPageChange: handleChangePage,
+          onLimitChange: handleChangeLimit,
         }}
       />
     </div>
