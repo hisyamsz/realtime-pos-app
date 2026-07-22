@@ -49,10 +49,103 @@ with check (
   auth.uid() = id or public.is_admin()
 );
 
--- 4. DELETE Policy (Delete: User can delete own profile, Admin can delete ANY profile)
+-- 4. DELETE Policy (Delete: Only admin can delete profiles)
+-- NOTE: Self-delete disabled intentionally — profile deletion should be admin-only.
 create policy "Profiles DELETE policy"
 on public.profiles for delete
 to authenticated
 using (
-  auth.uid() = id or public.is_admin()
+  public.is_admin()
 );
+
+-- ============================================================================
+-- SECURITY TRIGGERS: Prevent role privilege escalation
+-- ============================================================================
+
+-- Trigger 1: Block non-admin users from changing the 'role' column on UPDATE
+create or replace function public.prevent_role_self_escalation()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  -- Guard: profile id is immutable (tied to auth.users.id)
+  if new.id is distinct from old.id then
+    raise exception 'Cannot change profile id';
+  end if;
+
+  if new.role is distinct from old.role then
+    -- Non-admin users cannot change any role
+    if not public.is_admin() then
+      raise exception 'Only admins can change user roles';
+    end if;
+
+    -- Prevent demoting the last admin (even by another admin or self-demotion)
+    -- Advisory lock serializes concurrent admin demotion to prevent race conditions
+    if old.role = 'admin' and new.role <> 'admin' then
+      perform pg_advisory_xact_lock(42, hashtext('admin_role_lock'));
+      if (
+        select count(*) from public.profiles
+        where role = 'admin' and id <> old.id
+      ) = 0 then
+        raise exception 'Cannot demote the last admin. Promote another user first.';
+      end if;
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_prevent_role_escalation on public.profiles;
+create trigger trg_prevent_role_escalation
+before update on public.profiles
+for each row execute function public.prevent_role_self_escalation();
+
+-- Trigger 2: Force default role on INSERT for non-admin users
+-- Non-admin users inserting their own profile always get role = 'cashier'
+create or replace function public.enforce_default_role_on_insert()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if not public.is_admin() then
+    new.role := 'cashier';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_enforce_default_role on public.profiles;
+create trigger trg_enforce_default_role
+before insert on public.profiles
+for each row execute function public.enforce_default_role_on_insert();
+
+-- Trigger 3: Prevent deleting the last admin
+create or replace function public.prevent_last_admin_delete()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if old.role = 'admin' then
+    -- Advisory lock serializes concurrent admin deletion to prevent race conditions
+    perform pg_advisory_xact_lock(42, hashtext('admin_role_lock'));
+    if (
+      select count(*) from public.profiles
+      where role = 'admin' and id <> old.id
+    ) = 0 then
+      raise exception 'Cannot delete the last admin. Promote another user first.';
+    end if;
+  end if;
+  return old;
+end;
+$$;
+
+drop trigger if exists trg_prevent_last_admin_delete on public.profiles;
+create trigger trg_prevent_last_admin_delete
+before delete on public.profiles
+for each row execute function public.prevent_last_admin_delete();
