@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Search, UserPlus } from 'lucide-react';
+import { Search, UserPlus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import DataTable from '@/components/common/data-table';
@@ -67,7 +67,7 @@ export default function UserManagment() {
         (page - 1) * limit + index + 1,
         <span
           key={`id-${user.id}`}
-          className="inline-block max-w-[120px] font-medium"
+          className="inline-block font-medium"
           title={user.id}
         >
           {user.id}
@@ -75,15 +75,34 @@ export default function UserManagment() {
         user.name || 'Unknown Name',
         <Badge
           key={`role-${user.id}`}
-          variant={user.role === 'admin' ? 'secondary' : 'outline'}
+          variant={user.role === 'admin' ? 'default' : 'outline'}
           className="capitalize"
         >
           {user.role || 'user'}
         </Badge>,
         <DropdownAction
           key={`action-${user.id}`}
-          onEdit={() => handleEdit(user.id)}
-          onDelete={() => handleDelete(user.id)}
+          menu={[
+            {
+              label: (
+                <span className="flex items-center gap-2 text-blue-600">
+                  <Edit className="h-4 w-4 text-blue-600" />
+                  Edit
+                </span>
+              ),
+              action: () => handleEdit(user.id),
+            },
+            {
+              label: (
+                <span className="flex items-center gap-2">
+                  <Trash2 className="h-4 w-4 text-red-500" />
+                  Delete
+                </span>
+              ),
+              variant: 'destructive',
+              action: () => handleDelete(user.id),
+            },
+          ]}
         />,
       ];
     });
