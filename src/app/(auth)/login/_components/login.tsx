@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Store } from 'lucide-react';
 import { toast } from 'sonner';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -28,7 +28,6 @@ import { DarkmodeToggle } from '@/components/common/darkmode-toggle';
 import { loginAction as loginServerAction } from '../action';
 
 export default function Login() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [loginState, loginAction, isPending] = useActionState(
     loginServerAction,

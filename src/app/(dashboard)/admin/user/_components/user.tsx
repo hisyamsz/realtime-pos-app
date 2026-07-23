@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -11,13 +11,15 @@ import { Search, UserPlus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import DataTable from '@/components/common/data-table';
+import DialogContentUser from './dialog-content-user';
 import DropdownAction from '@/components/common/dropdown-action';
 import { HEADER_TABLE_USER } from '@/constants/user-constants';
 import { DEFAULT_PAGE } from '@/constants/data-table-constants';
 import useDataTable from '@/hooks/use-data-table';
 
-export default function UserManagment() {
+export default function UserManagement() {
   const supabase = createClient();
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const {
     currentPage: page,
@@ -110,6 +112,18 @@ export default function UserManagment() {
     });
   }, [users?.profiles, page, limit]);
 
+  const handleCreateSuccess = (message?: string) => {
+    toast.success(message || 'User created successfully');
+    setIsCreateOpen(false);
+  };
+
+  const handleCreateError = (message?: string) => {
+    toast.error('Failed to create user', {
+      description: message,
+      position: 'top-right',
+    });
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
@@ -123,7 +137,7 @@ export default function UserManagment() {
           />
         </div>
 
-        <Dialog>
+        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
             <Button
               variant="outline"
@@ -134,6 +148,12 @@ export default function UserManagment() {
               Create User
             </Button>
           </DialogTrigger>
+          <DialogContentUser
+            isOpen={isCreateOpen}
+            onClose={() => setIsCreateOpen(false)}
+            onSuccess={handleCreateSuccess}
+            onError={handleCreateError}
+          />
         </Dialog>
       </div>
 

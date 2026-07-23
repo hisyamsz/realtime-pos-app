@@ -16,3 +16,16 @@ export interface Profile {
   avatar_url?: string;
   role?: string;
 }
+
+export interface CreateUserFormState {
+  status: 'idle' | 'loading' | 'success' | 'error';
+  errors: {
+    email?: string[];
+    password?: string[];
+    name?: string[];
+    role?: string[];
+    avatar_url?: string[];
+    _form?: string[];
+  };
+  message?: string;
+}
