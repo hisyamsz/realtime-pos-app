@@ -1,5 +1,6 @@
 'use server';
 
+import z from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { CreateUserFormState } from '@/types/auth';
 import { createUserSchema } from '@/validation/auth-validation';
@@ -30,10 +31,11 @@ export async function createUser(
   });
 
   if (!validatedFields.success) {
+    const fieldErrors = z.flattenError(validatedFields.error).fieldErrors;
     return {
       status: 'error',
       errors: {
-        ...validatedFields.error.flatten().fieldErrors,
+        ...fieldErrors,
         _form: [],
       },
     };

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import z from 'zod';
 import { loginSchema } from '@/validation/auth-validation';
 import { createClient } from '@/lib/supabase/server';
 import { LoginFormState } from '@/types/auth';
@@ -32,7 +33,7 @@ export async function loginAction(
   });
 
   if (!validatedFields.success) {
-    const fieldErrors = validatedFields.error.flatten().fieldErrors;
+    const fieldErrors = z.flattenError(validatedFields.error).fieldErrors;
     return {
       status: 'error',
       errors: {
