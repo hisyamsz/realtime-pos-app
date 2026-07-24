@@ -4,7 +4,6 @@ import { startTransition, useActionState, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import Image from 'next/image';
 import { Loader2 } from 'lucide-react';
 
 import {
@@ -17,17 +16,11 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Form } from '@/components/ui/form';
 import { FormInput } from '@/components/common/form-input';
 import { PasswordInput } from '@/components/common/password-input';
 import FormSelect from '@/components/common/form-select';
+import { FormImage } from '@/components/common/form-image';
 
 import { createUserSchema, CreateUserForm } from '@/validation/auth-validation';
 import {
@@ -46,7 +39,7 @@ export default function DialogContentUser({
   isOpen,
   refetch,
 }: DialogContentUserProps) {
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
 
   const form = useForm<CreateUserForm>({
     resolver: zodResolver(createUserSchema),
@@ -59,7 +52,6 @@ export default function DialogContentUser({
   useEffect(() => {
     if (!isOpen) {
       form.reset();
-      setAvatarPreview(null);
     }
   }, [isOpen, form]);
 
@@ -86,25 +78,12 @@ export default function DialogContentUser({
     if (createUserState?.status === 'success') {
       toast.success(createUserState.message || 'Create User Success');
       form.reset();
-      setAvatarPreview(null);
       document.querySelector<HTMLButtonElement>('[data-state="open"]')?.click();
       refetch?.();
     }
   }, [createUserState, form, refetch]);
 
-  const handleAvatarChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    onChange: (value: File | null) => void,
-  ) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      onChange(file);
-      setAvatarPreview(URL.createObjectURL(file));
-    } else {
-      onChange(null);
-      setAvatarPreview(null);
-    }
-  };
+
 
   return (
     <DialogContent
@@ -155,37 +134,11 @@ export default function DialogContentUser({
             disabled={isPendingCreateUser}
           />
 
-          <FormField
+          <FormImage
             control={form.control}
             name="avatar_url"
-            render={({ field }) => (
-              <FormItem className="flex flex-col gap-1 space-y-1">
-                <FormLabel>Avatar (Optional)</FormLabel>
-                <div className="flex items-center gap-4">
-                  {avatarPreview && (
-                    <div className="border-border h-12 w-12 overflow-hidden rounded-full border">
-                      <Image
-                        src={avatarPreview}
-                        alt="Avatar preview"
-                        width={48}
-                        height={48}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  )}
-                  <FormControl>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleAvatarChange(e, field.onChange)}
-                      className="cursor-pointer"
-                      disabled={isPendingCreateUser}
-                    />
-                  </FormControl>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Avatar (Optional)"
+            disabled={isPendingCreateUser}
           />
 
           <DialogFooter className="mt-6 pt-4">

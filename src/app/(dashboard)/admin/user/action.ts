@@ -4,6 +4,7 @@ import z from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { CreateUserFormState } from '@/types/auth';
 import { createUserSchema } from '@/validation/auth-validation';
+import { uploadFile } from '@/actions/storage-action';
 
 export async function createUser(
   prevState: CreateUserFormState,
@@ -22,12 +23,16 @@ export async function createUser(
       },
     };
   }
+  const avatarFile = formData.get('avatar_url');
+  const hasAvatarFile = avatarFile instanceof File && avatarFile.size > 0;
+  const hasAvatarString = typeof avatarFile === 'string' && avatarFile.length > 0;
+
   const validatedFields = createUserSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
     name: formData.get('name'),
     role: formData.get('role'),
-    // avatar_url: formData.get('avatar_url'),
+    avatar_url: hasAvatarFile ? avatarFile : (hasAvatarString ? avatarFile : undefined),
   });
 
   if (!validatedFields.success) {
@@ -66,6 +71,24 @@ export async function createUser(
     };
   }
 
+  let avatarUrlString: string | undefined = undefined;
+
+  if (validatedFields.data.avatar_url instanceof File) {
+    const uploadResult = await uploadFile('images', 'users', validatedFields.data.avatar_url);
+    if (uploadResult.status === 'error') {
+      return {
+        status: 'error',
+        errors: {
+          ...prevState.errors,
+          _form: uploadResult.errors?._form || ['Failed to upload avatar image'],
+        },
+      };
+    }
+    avatarUrlString = uploadResult.data?.url;
+  } else if (typeof validatedFields.data.avatar_url === 'string') {
+    avatarUrlString = validatedFields.data.avatar_url;
+  }
+
   const supabase = await createClient({ isAdmin: true });
 
   const { error } = await supabase.auth.admin.createUser({
@@ -74,7 +97,7 @@ export async function createUser(
     user_metadata: {
       name: validatedFields.data.name,
       role: validatedFields.data.role,
-      // avatar_url: validatedFields.data.avatar_url,
+      avatar_url: avatarUrlString,
     },
     email_confirm: true,
   });

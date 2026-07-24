@@ -1,4 +1,5 @@
 import z from 'zod';
+import { MAX_FILE_SIZE, ALLOWED_IMAGE_TYPES } from '@/constants/file-constants';
 
 export const loginSchema = z.object({
   email: z
@@ -10,6 +11,8 @@ export const loginSchema = z.object({
     .min(1, 'Password is required')
     .max(100, 'Password must be at most 100 characters'),
 });
+
+
 
 export const createUserSchema = z.object({
   name: z
@@ -27,10 +30,13 @@ export const createUserSchema = z.object({
   role: z.string().min(1, 'Please select a valid role'),
   avatar_url: z
     .union([
-      z.custom<File>(
-        (val) => typeof window !== 'undefined' && val instanceof File,
-        { message: 'Invalid file format' },
-      ),
+      z
+        .instanceof(File)
+        .refine((file) => file.size <= MAX_FILE_SIZE, 'File size must be 2MB or less')
+        .refine(
+          (file) => ALLOWED_IMAGE_TYPES.includes(file.type),
+          'Only JPEG, PNG, WEBP, and GIF images are allowed'
+        ),
       z.string(),
     ])
     .optional()
