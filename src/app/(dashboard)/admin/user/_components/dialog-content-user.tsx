@@ -1,14 +1,12 @@
 'use client';
 
-import {
-  useActionState,
-  useState,
-  useEffect,
-  useRef,
-  startTransition,
-} from 'react';
+import { startTransition, useActionState, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import Image from 'next/image';
+import { Loader2 } from 'lucide-react';
+
 import {
   DialogContent,
   DialogHeader,
@@ -18,6 +16,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -35,129 +34,68 @@ import {
 } from '@/components/ui/form';
 import { FormInput } from '@/components/common/form-input';
 import { PasswordInput } from '@/components/common/password-input';
+
 import { createUserSchema, CreateUserForm } from '@/validation/auth-validation';
 import {
   INITIAL_CREATE_USER_FORM,
   INITIAL_STATE_CREATE_USER,
 } from '@/constants/auth-constants';
-import { Input } from '@/components/ui/input';
 import { createUser } from '../action';
-import { useQueryClient } from '@tanstack/react-query';
-import Image from 'next/image';
 
 interface DialogContentUserProps {
   isOpen?: boolean;
-  onClose?: () => void;
-  onSuccess?: (message?: string) => void;
-  onError?: (message?: string) => void;
+  refetch?: () => void;
 }
 
 export default function DialogContentUser({
   isOpen,
-  onClose,
-  onSuccess,
-  onError,
+  refetch,
 }: DialogContentUserProps) {
-  const queryClient = useQueryClient();
-  const formRef = useRef<HTMLFormElement>(null);
-
-  const [state, formAction, isPending] = useActionState(
-    createUser,
-    INITIAL_STATE_CREATE_USER,
-  );
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   const form = useForm<CreateUserForm>({
     resolver: zodResolver(createUserSchema),
-    defaultValues: INITIAL_CREATE_USER_FORM as any,
+    defaultValues: INITIAL_CREATE_USER_FORM,
   });
 
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-
-  const [formError, setFormError] = useState<string | null>(null);
-  const lastProcessedStateRef = useRef(state);
+  const [createUserState, createUserAction, isPendingCreateUser] =
+    useActionState(createUser, INITIAL_STATE_CREATE_USER);
 
   useEffect(() => {
     if (!isOpen) {
       form.reset();
       setAvatarPreview(null);
-      setFormError(null);
     }
   }, [isOpen, form]);
 
-  useEffect(() => {
-    if (state === lastProcessedStateRef.current) return;
-    lastProcessedStateRef.current = state;
-
-    if (state?.status === 'success') {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-      startTransition(() => {
-        formAction(null);
-      });
-      onSuccess?.(state.message);
-      form.reset();
-    }
-
-    if (state?.status === 'error') {
-      if (state.errors?._form?.[0]) {
-        onError?.(state.errors._form[0]);
-      }
-      startTransition(() => {
-        formAction(null);
-      });
-    }
-  }, [state, queryClient, onSuccess, onError, formAction, form]);
-
-  useEffect(() => {
-    if (state?.errors) {
-      if (state.errors.name?.length) {
-        form.setError('name', {
-          type: 'server',
-          message: state.errors.name[0],
-        });
-      }
-      if (state.errors.email?.length) {
-        form.setError('email', {
-          type: 'server',
-          message: state.errors.email[0],
-        });
-      }
-      if (state.errors.password?.length) {
-        form.setError('password', {
-          type: 'server',
-          message: state.errors.password[0],
-        });
-      }
-      if (state.errors.role?.length) {
-        form.setError('role', {
-          type: 'server',
-          message: state.errors.role[0],
-        });
-      }
-      if (state.errors._form?.length) {
-        setFormError(state.errors._form[0]);
-      }
-    }
-  }, [state, form]);
-
-  useEffect(() => {
-    const subscription = form.watch((_, { name }) => {
-      if (formError) setFormError(null);
-      if (name) form.clearErrors(name as any);
-    });
-    return () => subscription.unsubscribe();
-  }, [form, formError]);
-
-  const onSubmit = (data: CreateUserForm) => {
+  const onSubmit = form.handleSubmit((data) => {
     const formData = new FormData();
-    formData.append('name', data.name);
-    formData.append('email', data.email);
-    formData.append('password', data.password);
-    formData.append('role', data.role);
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value);
+      }
+    });
 
     startTransition(() => {
-      formAction(formData);
+      createUserAction(formData);
     });
-  };
+  });
+
+  useEffect(() => {
+    if (createUserState?.status === 'error') {
+      toast.error('Create User Failed', {
+        description: createUserState.errors?._form?.[0],
+      });
+    }
+
+    if (createUserState?.status === 'success') {
+      toast.success(createUserState.message || 'Create User Success');
+      form.reset();
+      setAvatarPreview(null);
+      document.querySelector<HTMLButtonElement>('[data-state="open"]')?.click();
+      refetch?.();
+    }
+  }, [createUserState, form, refetch]);
 
   const handleAvatarChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -166,8 +104,7 @@ export default function DialogContentUser({
     const file = e.target.files?.[0];
     if (file) {
       onChange(file);
-      const url = URL.createObjectURL(file);
-      setAvatarPreview(url);
+      setAvatarPreview(URL.createObjectURL(file));
     } else {
       onChange(null);
       setAvatarPreview(null);
@@ -175,7 +112,11 @@ export default function DialogContentUser({
   };
 
   return (
-    <DialogContent className="sm:max-w-[500px]">
+    <DialogContent
+      className="sm:max-w-[500px]"
+      onInteractOutside={(e) => e.preventDefault()}
+      onEscapeKeyDown={(e) => e.preventDefault()}
+    >
       <DialogHeader>
         <DialogTitle>Create New User</DialogTitle>
         <DialogDescription>
@@ -184,17 +125,13 @@ export default function DialogContentUser({
       </DialogHeader>
 
       <Form {...form}>
-        <form
-          ref={formRef}
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4 py-4"
-        >
+        <form onSubmit={onSubmit} className="space-y-4 py-4">
           <FormInput
             control={form.control}
             name="name"
             label="Full Name"
             placeholder="Enter full name"
-            disabled={isPending}
+            disabled={isPendingCreateUser}
           />
 
           <FormInput
@@ -203,7 +140,7 @@ export default function DialogContentUser({
             label="Email Address"
             placeholder="name@example.com"
             type="email"
-            disabled={isPending}
+            disabled={isPendingCreateUser}
           />
 
           <PasswordInput
@@ -211,7 +148,7 @@ export default function DialogContentUser({
             name="password"
             label="Password"
             placeholder="Enter password"
-            disabled={isPending}
+            disabled={isPendingCreateUser}
           />
 
           <FormField
@@ -223,7 +160,7 @@ export default function DialogContentUser({
                 <Select
                   onValueChange={field.onChange}
                   value={field.value || undefined}
-                  disabled={isPending}
+                  disabled={isPendingCreateUser}
                 >
                   <FormControl>
                     <SelectTrigger className="w-full [&:not([data-placeholder])]:capitalize">
@@ -259,6 +196,8 @@ export default function DialogContentUser({
                       <Image
                         src={avatarPreview}
                         alt="Avatar preview"
+                        width={48}
+                        height={48}
                         className="h-full w-full object-cover"
                       />
                     </div>
@@ -269,7 +208,7 @@ export default function DialogContentUser({
                       accept="image/*"
                       onChange={(e) => handleAvatarChange(e, field.onChange)}
                       className="cursor-pointer"
-                      disabled={isPending}
+                      disabled={isPendingCreateUser}
                     />
                   </FormControl>
                 </div>
@@ -278,12 +217,6 @@ export default function DialogContentUser({
             )}
           />
 
-          {formError && (
-            <div className="text-destructive bg-destructive/10 border-destructive/20 rounded-md border p-3 text-sm font-medium">
-              {formError}
-            </div>
-          )}
-
           <DialogFooter className="mt-6 pt-4">
             <DialogClose asChild>
               <Button
@@ -291,7 +224,7 @@ export default function DialogContentUser({
                 variant="secondary"
                 size="sm"
                 className="w-full sm:w-auto"
-                disabled={isPending}
+                disabled={isPendingCreateUser}
               >
                 Cancel
               </Button>
@@ -300,9 +233,16 @@ export default function DialogContentUser({
               type="submit"
               size="sm"
               className="w-full sm:w-auto"
-              disabled={isPending}
+              disabled={isPendingCreateUser}
             >
-              {isPending ? 'Creating...' : 'Create User'}
+              {isPendingCreateUser ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                'Create User'
+              )}
             </Button>
           </DialogFooter>
         </form>

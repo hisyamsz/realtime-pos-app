@@ -112,18 +112,6 @@ export default function UserManagement() {
     });
   }, [users?.profiles, page, limit]);
 
-  const handleCreateSuccess = (message?: string) => {
-    toast.success(message || 'User created successfully');
-    setIsCreateOpen(false);
-  };
-
-  const handleCreateError = (message?: string) => {
-    toast.error('Failed to create user', {
-      description: message,
-      position: 'top-right',
-    });
-  };
-
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
@@ -148,12 +136,7 @@ export default function UserManagement() {
               Create User
             </Button>
           </DialogTrigger>
-          <DialogContentUser
-            isOpen={isCreateOpen}
-            onClose={() => setIsCreateOpen(false)}
-            onSuccess={handleCreateSuccess}
-            onError={handleCreateError}
-          />
+          <DialogContentUser isOpen={isCreateOpen} refetch={refetch} />
         </Dialog>
       </div>
 

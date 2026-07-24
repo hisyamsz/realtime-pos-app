@@ -1,4 +1,5 @@
 import { CreateUserFormState, LoginFormState, Profile } from '@/types/auth';
+import { CreateUserForm } from '@/validation/auth-validation';
 
 export const INITIAL_LOGIN_FORM = {
   email: '',
@@ -21,9 +22,9 @@ export const INITIAL_STATE_PROFILE: Profile = {
   role: '',
 };
 
-export const INITIAL_CREATE_USER_FORM = {
+export const INITIAL_CREATE_USER_FORM: CreateUserForm = {
   name: '',
-  role: '',
+  role: 'cashier',
   avatar_url: '',
   email: '',
   password: '',

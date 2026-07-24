@@ -85,10 +85,13 @@ export default function Login() {
     return () => subscription.unsubscribe();
   }, [form, formError]);
 
-  const onSubmit = async (data: LoginForm) => {
+  const onSubmit = form.handleSubmit((data) => {
     const formData = new FormData();
-    formData.append('email', data.email);
-    formData.append('password', data.password);
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value);
+      }
+    });
 
     const callbackUrl = searchParams.get('callbackUrl');
     if (callbackUrl) {
@@ -98,7 +101,7 @@ export default function Login() {
     startTransition(() => {
       loginAction(formData);
     });
-  };
+  });
 
   return (
     <div className="bg-soft-cloud relative flex min-h-screen items-center justify-center p-4 md:p-8">
@@ -122,7 +125,7 @@ export default function Login() {
         <CardContent className="px-0 pb-0">
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={onSubmit}
               className="flex flex-col gap-6"
               noValidate
             >

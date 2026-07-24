@@ -11,8 +11,6 @@ export const loginSchema = z.object({
     .max(100, 'Password must be at most 100 characters'),
 });
 
-export type LoginForm = z.infer<typeof loginSchema>;
-
 export const createUserSchema = z.object({
   name: z
     .string()
@@ -33,7 +31,7 @@ export const createUserSchema = z.object({
     .union([
       z.custom<File>(
         (val) => typeof window !== 'undefined' && val instanceof File,
-        { message: 'Invalid file format' }
+        { message: 'Invalid file format' },
       ),
       z.string(),
     ])
@@ -41,4 +39,5 @@ export const createUserSchema = z.object({
     .nullable(),
 });
 
+export type LoginForm = z.infer<typeof loginSchema>;
 export type CreateUserForm = z.infer<typeof createUserSchema>;
