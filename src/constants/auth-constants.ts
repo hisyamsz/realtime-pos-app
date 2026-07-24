@@ -24,7 +24,7 @@ export const INITIAL_STATE_PROFILE: Profile = {
 
 export const INITIAL_CREATE_USER_FORM: CreateUserForm = {
   name: '',
-  role: 'cashier',
+  role: '',
   avatar_url: '',
   email: '',
   password: '',
@@ -41,3 +41,18 @@ export const INITIAL_STATE_CREATE_USER: CreateUserFormState = {
     _form: [],
   },
 };
+
+export const ROLE_LIST = [
+  {
+    value: 'admin',
+    label: 'Admin',
+  },
+  {
+    value: 'cashier',
+    label: 'Cashier',
+  },
+  {
+    value: 'kitchen',
+    label: 'Kitchen',
+  },
+];

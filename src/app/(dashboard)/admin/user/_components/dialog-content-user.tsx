@@ -18,13 +18,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   Form,
   FormControl,
   FormField,
@@ -34,11 +27,13 @@ import {
 } from '@/components/ui/form';
 import { FormInput } from '@/components/common/form-input';
 import { PasswordInput } from '@/components/common/password-input';
+import FormSelect from '@/components/common/form-select';
 
 import { createUserSchema, CreateUserForm } from '@/validation/auth-validation';
 import {
   INITIAL_CREATE_USER_FORM,
   INITIAL_STATE_CREATE_USER,
+  ROLE_LIST,
 } from '@/constants/auth-constants';
 import { createUser } from '../action';
 
@@ -151,37 +146,13 @@ export default function DialogContentUser({
             disabled={isPendingCreateUser}
           />
 
-          <FormField
-            control={form.control}
+          <FormSelect
+            form={form}
             name="role"
-            render={({ field }) => (
-              <FormItem className="flex flex-col gap-1 space-y-1">
-                <FormLabel>Role</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value || undefined}
-                  disabled={isPendingCreateUser}
-                >
-                  <FormControl>
-                    <SelectTrigger className="w-full [&:not([data-placeholder])]:capitalize">
-                      <SelectValue placeholder="Select a role" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {createUserSchema.shape.role.options.map((role) => (
-                      <SelectItem
-                        key={role}
-                        value={role}
-                        className="capitalize"
-                      >
-                        {role}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Role"
+            placeholder="Select a role"
+            selectItem={ROLE_LIST}
+            disabled={isPendingCreateUser}
           />
 
           <FormField

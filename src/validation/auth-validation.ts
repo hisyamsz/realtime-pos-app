@@ -24,9 +24,7 @@ export const createUserSchema = z.object({
     .string()
     .min(6, 'Password must be at least 6 characters')
     .max(100, 'Password must be at most 100 characters'),
-  role: z.enum(['admin', 'cashier', 'kitchen'], {
-    message: 'Please select a valid role',
-  }),
+  role: z.string().min(1, 'Please select a valid role'),
   avatar_url: z
     .union([
       z.custom<File>(
