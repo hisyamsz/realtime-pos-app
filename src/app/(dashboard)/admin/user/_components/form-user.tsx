@@ -25,21 +25,19 @@ interface FormUserProps {
   form: UseFormReturn<CreateUserForm>;
   onSubmit: (e?: React.FormEvent<HTMLFormElement>) => void;
   isPending?: boolean;
-  title?: string;
-  description?: string;
-  submitLabel?: string;
-  pendingLabel?: string;
+  submitLabel: string;
+  type: 'create' | 'update';
 }
 
 export function FormUser({
   form,
   onSubmit,
   isPending = false,
-  title = 'Create New User',
-  description = 'Fill in the user details below to add a new account.',
   submitLabel = 'Create User',
-  pendingLabel = 'Creating...',
+  type,
 }: FormUserProps) {
+  const isCreate = type === 'create';
+
   return (
     <DialogContent
       className="sm:max-w-[500px]"
@@ -47,8 +45,14 @@ export function FormUser({
       onEscapeKeyDown={(e) => e.preventDefault()}
     >
       <DialogHeader>
-        <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>{description}</DialogDescription>
+        <DialogTitle>
+          {isCreate ? 'Create New User' : 'Update User'}
+        </DialogTitle>
+        <DialogDescription>
+          {isCreate
+            ? 'Fill in the user details below to add a new account.'
+            : 'Update the user details below to update the account.'}
+        </DialogDescription>
       </DialogHeader>
 
       <Form {...form}>
@@ -61,22 +65,26 @@ export function FormUser({
             disabled={isPending}
           />
 
-          <FormInput
-            control={form.control}
-            name="email"
-            label="Email Address"
-            placeholder="name@example.com"
-            type="email"
-            disabled={isPending}
-          />
+          {isCreate && (
+            <FormInput
+              control={form.control}
+              name="email"
+              label="Email Address"
+              placeholder="name@example.com"
+              type="email"
+              disabled={isPending}
+            />
+          )}
 
-          <PasswordInput
-            control={form.control}
-            name="password"
-            label="Password"
-            placeholder="Enter password"
-            disabled={isPending}
-          />
+          {isCreate && (
+            <PasswordInput
+              control={form.control}
+              name="password"
+              label="Password"
+              placeholder="Enter password"
+              disabled={isPending}
+            />
+          )}
 
           <FormSelect
             form={form}
@@ -115,7 +123,6 @@ export function FormUser({
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {pendingLabel}
                 </>
               ) : (
                 submitLabel

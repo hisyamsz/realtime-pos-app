@@ -70,8 +70,8 @@ export default function DialogCreateUser({
       form={form}
       onSubmit={onSubmit}
       isPending={isPendingCreateUser}
-      title="Create New User"
-      description="Fill in the user details below to add a new account."
+      submitLabel="Create User"
+      type="create"
     />
   );
 }
