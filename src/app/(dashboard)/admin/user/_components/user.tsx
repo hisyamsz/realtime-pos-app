@@ -11,7 +11,7 @@ import { Search, UserPlus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import DataTable from '@/components/common/data-table';
-import DialogContentUser from './dialog-content-user';
+import DialogCreateUser from './dialog-create-user';
 import DropdownAction from '@/components/common/dropdown-action';
 import { HEADER_TABLE_USER } from '@/constants/user-constants';
 import { DEFAULT_PAGE } from '@/constants/data-table-constants';
@@ -136,7 +136,7 @@ export default function UserManagement() {
               Create User
             </Button>
           </DialogTrigger>
-          <DialogContentUser isOpen={isCreateOpen} refetch={refetch} />
+          <DialogCreateUser isOpen={isCreateOpen} refetch={refetch} />
         </Dialog>
       </div>
 

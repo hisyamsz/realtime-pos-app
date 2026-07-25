@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useRef, useState, useId, DragEvent } from 'react';
 import { Control, FieldPath, FieldValues, useWatch } from 'react-hook-form';
 import { FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { UploadCloud, Trash2, Loader2, AlertCircle, User } from 'lucide-react';
-import { cn, validateImageFile, getImageData } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { MAX_FILE_SIZE_MB } from '@/constants/file-constants';
+import { useFormImage, formatFileName } from '@/hooks/use-form-image';
 
 export interface FormImageProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -24,25 +24,6 @@ export interface FormImageProps<
   maxSizeMB?: number;
 }
 
-/**
- * Truncates long filenames while preserving the extension (e.g. "very_long_file_n...3.png")
- */
-function formatFileName(name: string, maxLen = 22): string {
-  if (!name || name.length <= maxLen) return name;
-  const lastDot = name.lastIndexOf('.');
-  if (lastDot > 0 && lastDot < name.length - 1) {
-    const ext = name.slice(lastDot);
-    const base = name.slice(0, lastDot);
-    const availableBaseLen = maxLen - ext.length - 3;
-    if (availableBaseLen > 4) {
-      const start = Math.ceil(availableBaseLen / 2);
-      const end = Math.floor(availableBaseLen / 2);
-      return `${base.slice(0, start)}...${base.slice(base.length - end)}${ext}`;
-    }
-  }
-  return `${name.slice(0, maxLen - 3)}...`;
-}
-
 export function FormImage<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -58,93 +39,31 @@ export function FormImage<
   avatarClassName,
   maxSizeMB = MAX_FILE_SIZE_MB,
 }: FormImageProps<TFieldValues, TName>) {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isWindowDragging, setIsWindowDragging] = useState(false);
-  const [isInvalidDrag, setIsInvalidDrag] = useState(false);
-  const [dragError, setDragError] = useState<string | null>(null);
-  const dropzoneId = useId();
-  const inputRef = useRef<HTMLInputElement>(null);
-
   const value = useWatch({
     control,
     name,
   });
 
-  useEffect(() => {
-    if (!value) {
-      setPreviewUrl(null);
-      setFileName(null);
-      setDragError(null);
-      return;
-    }
-
-    if ((value as any) instanceof File) {
-      const file = value as any as File;
-      const objectUrl = URL.createObjectURL(file);
-      setPreviewUrl(objectUrl);
-      setFileName(file.name);
-      setDragError(null);
-      return () => URL.revokeObjectURL(objectUrl);
-    }
-
-    if (typeof value === 'string') {
-      setPreviewUrl(value);
-      setFileName(value.split('/').pop() || null);
-      setDragError(null);
-    }
-  }, [value]);
-
-  // Track global window drag events to detect when a file is dragged anywhere on screen
-  useEffect(() => {
-    let dragCounter = 0;
-
-    const handleWindowDragEnter = (e: globalThis.DragEvent) => {
-      e.preventDefault();
-      if (disabled || previewUrl) return;
-
-      const types = e.dataTransfer?.types;
-      if (types && Array.from(types).includes('Files')) {
-        dragCounter++;
-        setIsWindowDragging(true);
-      }
-    };
-
-    const handleWindowDragOver = (e: globalThis.DragEvent) => {
-      e.preventDefault();
-      if (disabled || previewUrl) return;
-    };
-
-    const handleWindowDragLeave = (e: globalThis.DragEvent) => {
-      e.preventDefault();
-      if (disabled || previewUrl) return;
-
-      dragCounter--;
-      if (dragCounter <= 0) {
-        dragCounter = 0;
-        setIsWindowDragging(false);
-      }
-    };
-
-    const handleWindowDrop = (e: globalThis.DragEvent) => {
-      e.preventDefault();
-      dragCounter = 0;
-      setIsWindowDragging(false);
-    };
-
-    window.addEventListener('dragenter', handleWindowDragEnter);
-    window.addEventListener('dragover', handleWindowDragOver);
-    window.addEventListener('dragleave', handleWindowDragLeave);
-    window.addEventListener('drop', handleWindowDrop);
-
-    return () => {
-      window.removeEventListener('dragenter', handleWindowDragEnter);
-      window.removeEventListener('dragover', handleWindowDragOver);
-      window.removeEventListener('dragleave', handleWindowDragLeave);
-      window.removeEventListener('drop', handleWindowDrop);
-    };
-  }, [disabled, previewUrl]);
+  const {
+    previewUrl,
+    fileName,
+    isDragging,
+    isWindowDragging,
+    isAnyDragging,
+    isInvalidDrag,
+    dragError,
+    dropzoneId,
+    inputRef,
+    handleInputChange,
+    handleRemove,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+  } = useFormImage({
+    value,
+    disabled,
+    maxSizeMB,
+  });
 
   return (
     <FormField
@@ -154,89 +73,8 @@ export function FormImage<
         field: { onChange, value: _, ...fieldProps },
         fieldState,
       }) => {
-        const handleFileChange = (file: File | null) => {
-          if (file) {
-            const validationError = validateImageFile(file, maxSizeMB);
-            if (validationError) {
-              setDragError(validationError);
-              onChange(null);
-              return;
-            }
-            setDragError(null);
-            onChange(file);
-          } else {
-            setDragError(null);
-            onChange(null);
-          }
-        };
-
-        const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-          if (e.target.files && e.target.files.length > 0) {
-            const { file } = getImageData(e);
-            handleFileChange(file);
-          }
-        };
-
-        const handleRemove = (e: React.MouseEvent) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setDragError(null);
-          onChange(null);
-          setPreviewUrl(null);
-          setFileName(null);
-          if (inputRef.current) {
-            inputRef.current.value = '';
-          }
-        };
-
-        const handleDragOver = (e: DragEvent<HTMLLabelElement>) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (disabled || previewUrl) return;
-
-          const items = Array.from(e.dataTransfer.items || []);
-          const hasNonImage = items.some(
-            (item) =>
-              item.kind === 'file' &&
-              item.type &&
-              !item.type.startsWith('image/'),
-          );
-
-          setIsDragging(true);
-          setIsInvalidDrag(hasNonImage);
-        };
-
-        const handleDragLeave = (e: DragEvent<HTMLLabelElement>) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setIsDragging(false);
-          setIsInvalidDrag(false);
-        };
-
-        const handleDrop = (e: DragEvent<HTMLLabelElement>) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setIsDragging(false);
-          setIsWindowDragging(false);
-          setIsInvalidDrag(false);
-          if (disabled || previewUrl) return;
-
-          const files = e.dataTransfer?.files;
-          if (files && files.length > 0) {
-            const file = files[0];
-            if (!file.type.startsWith('image/')) {
-              setDragError(
-                'Invalid file format. Only image files (JPG, PNG, WEBP, GIF) are allowed.',
-              );
-              return;
-            }
-            handleFileChange(file);
-          }
-        };
-
         const isInvalid = !!fieldState.error || !!dragError;
         const errorMessage = fieldState.error?.message || dragError;
-        const isAnyDragging = isDragging || isWindowDragging;
 
         return (
           <FormItem
@@ -250,7 +88,7 @@ export function FormImage<
               htmlFor={`dropzone-file-${dropzoneId}`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
+              onDrop={(e) => handleDrop(e, onChange)}
               className={cn(
                 'relative flex min-h-32 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition-all duration-200 ease-in-out',
                 isInvalid || isInvalidDrag
@@ -264,7 +102,6 @@ export function FormImage<
                   'pointer-events-none opacity-60',
               )}
             >
-              {/* Preview Mode - Centered Big Image in Sidebar Style */}
               {previewUrl && (
                 <div className="relative flex w-full max-w-full min-w-0 flex-col items-center justify-center overflow-hidden p-4 text-center">
                   <Avatar
@@ -297,7 +134,7 @@ export function FormImage<
 
                   <button
                     type="button"
-                    onClick={handleRemove}
+                    onClick={(e) => handleRemove(e, onChange)}
                     disabled={isDeleting || disabled}
                     className="border-border bg-background/90 text-destructive hover:bg-destructive/10 absolute top-2 right-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border shadow-xs transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-50"
                     title="Remove image"
@@ -392,7 +229,7 @@ export function FormImage<
                 id={`dropzone-file-${dropzoneId}`}
                 className="hidden"
                 disabled={disabled || !!previewUrl}
-                onChange={handleInputChange}
+                onChange={(e) => handleInputChange(e, onChange)}
                 onClick={(e) => {
                   e.currentTarget.value = '';
                 }}
