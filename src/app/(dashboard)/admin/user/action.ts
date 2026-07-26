@@ -187,7 +187,7 @@ export async function updateUser(
 
   const supabase = await createClient({ isAdmin: true });
   const { id, name, role } = validatedFields.data;
-  const avatar_url = avatarResult.avatarUrlString;
+  const avatar_url = avatarResult.avatarUrlString ?? null;
 
   const { error: profileError } = await supabase
     .from('profiles')

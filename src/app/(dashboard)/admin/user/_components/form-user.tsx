@@ -28,6 +28,7 @@ interface FormUserProps<T extends FieldValues> {
   submitLabel: string;
   type: 'create' | 'update';
   isRoleDisabled?: boolean;
+  isSubmitDisabled?: boolean;
 }
 
 export function FormUser<T extends CreateUserForm | UpdateUserForm>({
@@ -37,6 +38,7 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
   submitLabel = 'Create User',
   type,
   isRoleDisabled = false,
+  isSubmitDisabled = false,
 }: FormUserProps<T>) {
   const isCreate = type === 'create';
   const control = form.control as unknown as Control<CreateUserForm>;
@@ -121,7 +123,12 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
               type="submit"
               size="sm"
               className="w-full sm:w-auto"
-              disabled={isPending}
+              disabled={isPending || isSubmitDisabled}
+              title={
+                isSubmitDisabled
+                  ? 'Please modify at least one valid field to submit'
+                  : undefined
+              }
             >
               {isPending ? (
                 <>

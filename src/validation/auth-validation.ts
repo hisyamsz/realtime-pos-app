@@ -1,5 +1,6 @@
 import z from 'zod';
 import { MAX_FILE_SIZE, ALLOWED_IMAGE_TYPES } from '@/constants/file-constants';
+import { HAS_LETTER_OR_NUMBER_REGEX } from '@/constants/auth-constants';
 
 export const loginSchema = z.object({
   email: z
@@ -14,11 +15,20 @@ export const loginSchema = z.object({
 
 
 
+const nameSchema = z
+  .string()
+  .trim()
+  .min(1, 'Name is required')
+  .max(100, 'Name must be at most 100 characters')
+  .refine((val) => val.trim().length > 0, {
+    message: 'Name cannot be empty or whitespace only',
+  })
+  .refine((val) => HAS_LETTER_OR_NUMBER_REGEX.test(val), {
+    message: 'Name must contain at least one letter or number',
+  });
+
 export const createUserSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'Name is required')
-    .max(100, 'Name must be at most 100 characters'),
+  name: nameSchema,
   email: z
     .email({ message: 'Please enter a valid email' })
     .min(1, 'Email is required')
@@ -45,10 +55,7 @@ export const createUserSchema = z.object({
 
 export const updateUserSchema = z.object({
   id: z.string().min(1, 'User ID is required'),
-  name: z
-    .string()
-    .min(1, 'Name is required')
-    .max(100, 'Name must be at most 100 characters'),
+  name: nameSchema,
   role: z.string().min(1, 'Please select a valid role'),
   avatar_url: z
     .union([
