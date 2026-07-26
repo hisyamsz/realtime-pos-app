@@ -43,3 +43,6 @@ next-env.d.ts
 # graphify output
 graphify-out/
 
+# ai agent config
+.gemini/
+

@@ -1,24 +1,35 @@
 # Aturan Validasi Kode (Code Validation Rules)
 
-Setiap kali melakukan perubahan kode di dalam proyek ini, gunakan langkah-langkah verifikasi yang cepat untuk memastikan tidak ada error TypeScript atau masalah linting.
+Setiap kali melakukan perubahan kode di dalam proyek ini, gunakan langkah-langkah verifikasi yang sesuai dengan jenis perubahan yang dilakukan.
 
 ## Aturan Validasi Perubahan
 
-Untuk memverifikasi perubahan kode secara efisien tanpa harus menjalankan proses build yang memakan waktu lama (`npm run build`), cukup jalankan perintah-perintah berikut:
+### 1. Perubahan Kode TypeScript / JavaScript (Logika & Fungsionalitas)
+Setiap kali mengubah kode TypeScript atau JavaScript yang melibatkan logika/fungsionalitas, **wajib** melakukan pengecekan tipe TypeScript dan linter untuk memastikan tidak ada kesalahan:
 
-1. **Pengecekan Tipe TypeScript:**
+- **Pengecekan Tipe TypeScript:**
+  ```bash
+  npx tsc --noEmit
+  ```
+  _Memastikan seluruh kode TypeScript valid dan tidak memiliki kesalahan tipe tanpa memproduksi output file._
 
-   ```bash
-   npx tsc --noEmit
-   ```
+- **Pengecekan Linter:**
+  ```bash
+  npm run lint
+  ```
+  _Memastikan kode mengikuti pedoman standar kualitas dan kelayakan kode._
 
-   _Perintah ini memastikan seluruh kode TypeScript valid dan tidak memiliki kesalahan tipe tanpa memproduksi output file._
+### 2. Perubahan Khusus Style / Styling Component
+Jika **hanya** mengubah bagian tampilan atau styling komponen (seperti class Tailwind), **tidak perlu** menjalankan verifikasi TypeScript (`npx tsc --noEmit`). Cukup jalankan perintah format agar pengurutan class Tailwind berjalan otomatis:
 
-2. **Pengecekan Linter:**
-   ```bash
-   npm run lint
-   ```
-   _Perintah ini memastikan kode mengikuti pedoman formatting dan standar kualitas kode yang telah dikonfigurasi._
+- **Formatting & Class Sorting:**
+  ```bash
+  npm run format
+  ```
+  _Menjalankan Prettier untuk merapikan format kode serta menyusun/mengurutkan class Tailwind secara otomatis._
+
+---
 
 > [!IMPORTANT]
-> Semua perubahan **wajib** divalidasi menggunakan kedua perintah di atas dan harus lolos tanpa error sebelum dianggap selesai atau siap dipublikasikan/digabungkan. Hindari menjalankan `npm run build` untuk pengujian rutin karena memakan waktu yang cukup lama.
+> - Hindari menjalankan `npm run build` untuk pengujian rutin karena memakan waktu yang cukup lama.
+> - Pastikan selalu memilih langkah verifikasi yang sesuai (Pengecekan TypeScript/Linter untuk perubahan logika kode, dan `npm run format` untuk perubahan styling).
