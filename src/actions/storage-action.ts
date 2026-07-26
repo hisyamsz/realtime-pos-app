@@ -33,7 +33,8 @@ export async function uploadFile(
     environment.SUPABASE_SERVICE_ROLE_KEY!,
   );
 
-  const newPath = `${path}/${Date.now()}-${file.name}`;
+  const sanitizedFileName = file.name.replace(/\s+/g, '-');
+  const newPath = `${path}/${Date.now()}-${sanitizedFileName}`;
 
   if (prevPath) {
     const { error } = await supabase.storage.from(bucket).remove([prevPath]);

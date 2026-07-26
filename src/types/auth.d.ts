@@ -29,3 +29,15 @@ export interface CreateUserFormState {
   };
   message?: string;
 }
+
+export interface UpdateUserFormState {
+  status: 'idle' | 'loading' | 'success' | 'error';
+  errors: {
+    id?: string[];
+    name?: string[];
+    role?: string[];
+    avatar_url?: string[];
+    _form?: string[];
+  };
+  message?: string;
+}

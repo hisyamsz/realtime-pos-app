@@ -1,5 +1,5 @@
-import { CreateUserFormState, LoginFormState, Profile } from '@/types/auth';
-import { CreateUserForm } from '@/validation/auth-validation';
+import { CreateUserFormState, LoginFormState, Profile, UpdateUserFormState } from '@/types/auth';
+import { CreateUserForm, UpdateUserForm } from '@/validation/auth-validation';
 
 export const INITIAL_LOGIN_FORM = {
   email: '',
@@ -35,6 +35,24 @@ export const INITIAL_STATE_CREATE_USER: CreateUserFormState = {
   errors: {
     email: [],
     password: [],
+    name: [],
+    role: [],
+    avatar_url: [],
+    _form: [],
+  },
+};
+
+export const INITIAL_UPDATE_USER_FORM: UpdateUserForm = {
+  id: '',
+  name: '',
+  role: '',
+  avatar_url: '',
+};
+
+export const INITIAL_STATE_UPDATE_USER: UpdateUserFormState = {
+  status: 'idle',
+  errors: {
+    id: [],
     name: [],
     role: [],
     avatar_url: [],

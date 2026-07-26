@@ -11,15 +11,19 @@ export interface UseFormImageProps {
   maxSizeMB?: number;
 }
 
-/**
- * Truncates long filenames while preserving the extension (e.g. "very_long_file_n...3.png")
- */
 export function formatFileName(name: string, maxLen = 22): string {
-  if (!name || name.length <= maxLen) return name;
-  const lastDot = name.lastIndexOf('.');
-  if (lastDot > 0 && lastDot < name.length - 1) {
-    const ext = name.slice(lastDot);
-    const base = name.slice(0, lastDot);
+  if (!name) return name;
+  let decodedName = name;
+  try {
+    decodedName = decodeURIComponent(name);
+  } catch {
+    decodedName = name;
+  }
+  if (decodedName.length <= maxLen) return decodedName;
+  const lastDot = decodedName.lastIndexOf('.');
+  if (lastDot > 0 && lastDot < decodedName.length - 1) {
+    const ext = decodedName.slice(lastDot);
+    const base = decodedName.slice(0, lastDot);
     const availableBaseLen = maxLen - ext.length - 3;
     if (availableBaseLen > 4) {
       const start = Math.ceil(availableBaseLen / 2);
@@ -27,7 +31,7 @@ export function formatFileName(name: string, maxLen = 22): string {
       return `${base.slice(0, start)}...${base.slice(base.length - end)}${ext}`;
     }
   }
-  return `${name.slice(0, maxLen - 3)}...`;
+  return `${decodedName.slice(0, maxLen - 3)}...`;
 }
 
 export function useFormImage({
@@ -61,7 +65,16 @@ export function useFormImage({
 
     if (typeof value === 'string') {
       setPreviewUrl(value);
-      setFileName(value.split('/').pop() || null);
+      const rawName = value.split('/').pop() || null;
+      if (rawName) {
+        try {
+          setFileName(decodeURIComponent(rawName));
+        } catch {
+          setFileName(rawName);
+        }
+      } else {
+        setFileName(null);
+      }
       setDragError(null);
     }
   }, [value]);

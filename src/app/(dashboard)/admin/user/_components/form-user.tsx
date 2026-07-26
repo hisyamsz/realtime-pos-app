@@ -1,6 +1,6 @@
 'use client';
 
-import { UseFormReturn } from 'react-hook-form';
+import { FieldValues, UseFormReturn, Control } from 'react-hook-form';
 import { Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -18,25 +18,26 @@ import { PasswordInput } from '@/components/common/password-input';
 import FormSelect from '@/components/common/form-select';
 import { FormImage } from '@/components/common/form-image';
 
-import { CreateUserForm } from '@/validation/auth-validation';
 import { ROLE_LIST } from '@/constants/auth-constants';
+import { CreateUserForm, UpdateUserForm } from '@/validation/auth-validation';
 
-interface FormUserProps {
-  form: UseFormReturn<CreateUserForm>;
+interface FormUserProps<T extends FieldValues> {
+  form: UseFormReturn<T>;
   onSubmit: (e?: React.FormEvent<HTMLFormElement>) => void;
   isPending?: boolean;
   submitLabel: string;
   type: 'create' | 'update';
 }
 
-export function FormUser({
+export function FormUser<T extends CreateUserForm | UpdateUserForm>({
   form,
   onSubmit,
   isPending = false,
   submitLabel = 'Create User',
   type,
-}: FormUserProps) {
+}: FormUserProps<T>) {
   const isCreate = type === 'create';
+  const control = form.control as unknown as Control<CreateUserForm>;
 
   return (
     <DialogContent
@@ -58,7 +59,7 @@ export function FormUser({
       <Form {...form}>
         <form onSubmit={onSubmit} className="space-y-4 py-4">
           <FormInput
-            control={form.control}
+            control={control}
             name="name"
             label="Full Name"
             placeholder="Enter full name"
@@ -67,7 +68,7 @@ export function FormUser({
 
           {isCreate && (
             <FormInput
-              control={form.control}
+              control={control}
               name="email"
               label="Email Address"
               placeholder="name@example.com"
@@ -78,7 +79,7 @@ export function FormUser({
 
           {isCreate && (
             <PasswordInput
-              control={form.control}
+              control={control}
               name="password"
               label="Password"
               placeholder="Enter password"
@@ -87,7 +88,7 @@ export function FormUser({
           )}
 
           <FormSelect
-            form={form}
+            control={control}
             name="role"
             label="Role"
             placeholder="Select a role"
@@ -96,7 +97,7 @@ export function FormUser({
           />
 
           <FormImage
-            control={form.control}
+            control={control}
             name="avatar_url"
             label="Avatar (Optional)"
             disabled={isPending}

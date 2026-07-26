@@ -12,14 +12,20 @@ import { toast } from 'sonner';
 
 import DataTable from '@/components/common/data-table';
 import DialogCreateUser from './dialog-create-user';
+import DialogUpdateUser from './dialog-update-user';
 import DropdownAction from '@/components/common/dropdown-action';
 import { HEADER_TABLE_USER } from '@/constants/user-constants';
 import { DEFAULT_PAGE } from '@/constants/data-table-constants';
 import useDataTable from '@/hooks/use-data-table';
+import { Profile } from '@/types/auth';
 
 export default function UserManagement() {
   const supabase = createClient();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [selectedAction, setSelectedAction] = useState<{
+    data: Profile;
+    type: 'update' | 'delete';
+  } | null>(null);
 
   const {
     currentPage: page,
@@ -30,12 +36,12 @@ export default function UserManagement() {
     handleChangeLimit,
   } = useDataTable();
 
-  const handleEdit = (id: string) => {
-    console.log('Edit user ID:', id);
+  const handleEdit = (user: Profile) => {
+    setSelectedAction({ data: user, type: 'update' });
   };
 
-  const handleDelete = (id: string) => {
-    console.log('Delete user ID:', id);
+  const handleDelete = (user: Profile) => {
+    setSelectedAction({ data: user, type: 'delete' });
   };
 
   const {
@@ -79,7 +85,13 @@ export default function UserManagement() {
         user.name || 'Unknown Name',
         <Badge
           key={`role-${user.id}`}
-          variant={user.role === 'admin' ? 'default' : 'outline'}
+          variant={
+            user.role === 'admin'
+              ? 'default'
+              : user.role === 'kitchen'
+                ? 'secondary'
+                : 'outline'
+          }
           className="capitalize"
         >
           {user.role || 'user'}
@@ -94,7 +106,7 @@ export default function UserManagement() {
                   Edit
                 </span>
               ),
-              action: () => handleEdit(user.id),
+              action: () => handleEdit(user),
             },
             {
               label: (
@@ -104,7 +116,7 @@ export default function UserManagement() {
                 </span>
               ),
               variant: 'destructive',
-              action: () => handleDelete(user.id),
+              action: () => handleDelete(user),
             },
           ]}
         />,
@@ -125,19 +137,30 @@ export default function UserManagement() {
           />
         </div>
 
-        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <DialogTrigger asChild>
-            <Button
-              variant="outline"
-              size="xl"
-              className="group w-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 sm:w-auto"
-            >
-              <UserPlus className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-              Create User
-            </Button>
-          </DialogTrigger>
-          <DialogCreateUser isOpen={isCreateOpen} refetch={refetch} />
-        </Dialog>
+        <Button
+          variant="outline"
+          size="xl"
+          className="group w-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 sm:w-auto"
+          onClick={() => setIsCreateOpen(true)}
+        >
+          <UserPlus className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+          Create User
+        </Button>
+
+        <DialogCreateUser
+          open={isCreateOpen}
+          handleChangeAction={setIsCreateOpen}
+          refetch={refetch}
+        />
+
+        <DialogUpdateUser
+          open={selectedAction?.type === 'update'}
+          handleChangeAction={(open) => {
+            if (!open) setSelectedAction(null);
+          }}
+          currentData={selectedAction?.type === 'update' ? selectedAction.data : null}
+          refetch={refetch}
+        />
       </div>
 
       <DataTable

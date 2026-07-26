@@ -1,10 +1,11 @@
 'use client';
 
-import { startTransition, useActionState, useEffect } from 'react';
+import { startTransition, useActionState, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 
+import { Dialog } from '@/components/ui/dialog';
 import { FormUser } from './form-user';
 
 import { createUserSchema, CreateUserForm } from '@/validation/auth-validation';
@@ -13,16 +14,17 @@ import {
   INITIAL_STATE_CREATE_USER,
 } from '@/constants/auth-constants';
 import { createUser } from '../action';
-
-interface DialogCreateUserProps {
-  isOpen?: boolean;
-  refetch?: () => void;
-}
+import { Preview } from '@/types/general';
 
 export default function DialogCreateUser({
-  isOpen,
   refetch,
-}: DialogCreateUserProps) {
+  open,
+  handleChangeAction,
+}: {
+  refetch?: () => void;
+  open?: boolean;
+  handleChangeAction?: (open: boolean) => void;
+}) {
   const form = useForm<CreateUserForm>({
     resolver: zodResolver(createUserSchema),
     defaultValues: INITIAL_CREATE_USER_FORM,
@@ -31,17 +33,16 @@ export default function DialogCreateUser({
   const [createUserState, createUserAction, isPendingCreateUser] =
     useActionState(createUser, INITIAL_STATE_CREATE_USER);
 
-  useEffect(() => {
-    if (!isOpen) {
-      form.reset();
-    }
-  }, [isOpen, form]);
+  const [preview, setPreview] = useState<Preview | undefined>(undefined);
 
   const onSubmit = form.handleSubmit((data) => {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        formData.append(key, value);
+        formData.append(
+          key,
+          key === 'avatar_url' ? preview?.file ?? '' : (value as any),
+        );
       }
     });
 
@@ -60,18 +61,28 @@ export default function DialogCreateUser({
     if (createUserState?.status === 'success') {
       toast.success(createUserState.message || 'Create User Success');
       form.reset();
-      document.querySelector<HTMLButtonElement>('[data-state="open"]')?.click();
+      setPreview(undefined);
+      handleChangeAction?.(false);
       refetch?.();
     }
-  }, [createUserState, form, refetch]);
+  }, [createUserState]);
+
+  useEffect(() => {
+    if (!open) {
+      form.reset();
+      setPreview(undefined);
+    }
+  }, [open, form]);
 
   return (
-    <FormUser
-      form={form}
-      onSubmit={onSubmit}
-      isPending={isPendingCreateUser}
-      submitLabel="Create User"
-      type="create"
-    />
+    <Dialog open={open} onOpenChange={handleChangeAction}>
+      <FormUser
+        form={form}
+        onSubmit={onSubmit}
+        isPending={isPendingCreateUser}
+        submitLabel="Create User"
+        type="create"
+      />
+    </Dialog>
   );
 }

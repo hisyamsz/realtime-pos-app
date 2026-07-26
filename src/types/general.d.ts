@@ -4,3 +4,8 @@ export interface BaseResponse<T = any> {
   data?: T;
   error?: string;
 }
+
+export interface Preview {
+  file?: File;
+  displayUrl?: string;
+}
