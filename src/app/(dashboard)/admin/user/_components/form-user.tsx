@@ -27,6 +27,7 @@ interface FormUserProps<T extends FieldValues> {
   isPending?: boolean;
   submitLabel: string;
   type: 'create' | 'update';
+  isRoleDisabled?: boolean;
 }
 
 export function FormUser<T extends CreateUserForm | UpdateUserForm>({
@@ -35,6 +36,7 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
   isPending = false,
   submitLabel = 'Create User',
   type,
+  isRoleDisabled = false,
 }: FormUserProps<T>) {
   const isCreate = type === 'create';
   const control = form.control as unknown as Control<CreateUserForm>;
@@ -93,7 +95,7 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
             label="Role"
             placeholder="Select a role"
             selectItem={ROLE_LIST}
-            disabled={isPending}
+            disabled={isPending || isRoleDisabled}
           />
 
           <FormImage

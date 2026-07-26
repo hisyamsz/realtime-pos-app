@@ -13,6 +13,7 @@ import { INITIAL_STATE_UPDATE_USER } from '@/constants/auth-constants';
 import { updateUser } from '../action';
 import { Profile } from '@/types/auth';
 import { Preview } from '@/types/general';
+import { useAuthStore } from '@/providers/auth-store-provider';
 
 export default function DialogUpdateUser({
   refetch,
@@ -25,6 +26,9 @@ export default function DialogUpdateUser({
   open?: boolean;
   handleChangeAction?: (open: boolean) => void;
 }) {
+  const currentUserId = useAuthStore((state) => state.profile?.id || state.user?.id);
+  const isSelf = Boolean(currentUserId && currentData?.id === currentUserId);
+
   const form = useForm<UpdateUserForm>({
     resolver: zodResolver(updateUserSchema),
   });
@@ -35,6 +39,14 @@ export default function DialogUpdateUser({
   const [preview, setPreview] = useState<Preview | undefined>(undefined);
 
   const onSubmit = form.handleSubmit((data) => {
+    if (isSelf && data.role !== 'admin') {
+      toast.error('Update User Failed', {
+        description: 'Admins cannot change their own role',
+      });
+      form.setValue('role', currentData?.role || 'admin');
+      return;
+    }
+
     const formData = new FormData();
     if (currentData?.avatar_url !== data.avatar_url) {
       Object.entries(data).forEach(([key, value]) => {
@@ -65,10 +77,13 @@ export default function DialogUpdateUser({
       toast.error('Update User Failed', {
         description: updateUserState.errors?._form?.[0],
       });
+      if (currentData) {
+        form.setValue('role', currentData.role as string);
+      }
     }
 
     if (updateUserState?.status === 'success') {
-      toast.success(updateUserState.message || 'Update User Success');
+      toast.success(updateUserState.message || 'User updated successfully');
       form.reset();
       handleChangeAction?.(false);
       refetch?.();
@@ -103,6 +118,7 @@ export default function DialogUpdateUser({
         isPending={isPendingUpdateUser}
         submitLabel="Update User"
         type="update"
+        isRoleDisabled={isSelf}
       />
     </Dialog>
   );
