@@ -1,8 +1,14 @@
-# Aturan Validasi Kode (Code Validation Rules)
+# Aturan Pengembangan & Validasi Kode (Code Rules & Workflows)
 
-Setiap kali melakukan perubahan kode di dalam proyek ini, gunakan langkah-langkah verifikasi yang sesuai dengan jenis perubahan yang dilakukan.
+Setiap kali bekerja di dalam proyek ini, gunakan pedoman berikut untuk eksplorasi arsitektur dan verifikasi kode.
 
-## Aturan Validasi Perubahan
+## 1. Navigasi & Eksplorasi Kode (Graphify Knowledge Base)
+
+Untuk memahami arsitektur codebase, hubungan antar komponen, atau struktur proyek pada sesi baru:
+- **Dilarang melakukan scan direktori atau grep manual satu per satu.**
+- **Wajib periksa dahulu laporan pengetahuan arsitektur di `graphify-out/GRAPH_REPORT.md`** (serta memanfaatkan file/tools pendukung di folder `graphify-out/`). Ini memberikan peta arsitektur lengkap (God Nodes, Community Hubs, Dependency Tree) secara langsung tanpa pemindaian ulang.
+
+## 2. Aturan Validasi Perubahan Kode
 
 ### 1. Perubahan Kode TypeScript / JavaScript (Logika & Fungsionalitas)
 Setiap kali mengubah kode TypeScript atau JavaScript yang melibatkan logika/fungsionalitas, **wajib** melakukan pengecekan tipe TypeScript dan linter untuk memastikan tidak ada kesalahan:
