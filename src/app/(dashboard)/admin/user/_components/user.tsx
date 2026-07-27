@@ -126,7 +126,7 @@ export default function UserManagement() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-        <div className="relative w-full sm:w-2/5">
+        <div className="relative w-full sm:w-1/2 lg:w-2/5">
           <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" />
           <Input
             type="search"
