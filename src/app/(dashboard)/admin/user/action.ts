@@ -3,7 +3,6 @@
 import { deleteFile, uploadFile } from '@/actions/storage-action';
 import { createClient } from '@/lib/supabase/server';
 import { CreateUserFormState, UpdateUserFormState } from '@/types/auth';
-import { BaseFormState } from '@/types/general';
 import {
   createUserSchema,
   updateUserSchema,
@@ -322,4 +321,3 @@ export async function deleteUser(
     message: 'User deleted successfully',
   };
 }
-
