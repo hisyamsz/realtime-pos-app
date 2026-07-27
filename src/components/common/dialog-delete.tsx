@@ -33,11 +33,14 @@ export default function DialogDelete({
   isPending = false,
   confirmLabel = 'Delete',
   cancelLabel = 'Cancel',
-  className = 'sm:max-w-[500px]',
+  className,
 }: DialogDeleteProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={className} showCloseButton={!isPending}>
+      <DialogContent
+        className={`sm:max-w-[500px] ${className}`}
+        showCloseButton={!isPending}
+      >
         <DialogHeader>
           <DialogTitle>Delete {title}</DialogTitle>
           <DialogDescription>
@@ -59,7 +62,7 @@ export default function DialogDelete({
           >
             {isPending ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
                 Deleting...
               </>
             ) : (

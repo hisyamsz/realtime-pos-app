@@ -67,8 +67,8 @@ export default function DialogDeleteUser({
       description={
         <span className="text-muted-foreground text-sm leading-normal">
           Are you sure you want to delete user{' '}
-          <strong className="text-foreground bg-muted/60 border-border/50 rounded-md border px-1.5 py-0.5 font-medium">
-            {currentData?.name || 'Unknown Name'}
+          <strong className="text-foreground font-medium">
+            &quot;{currentData?.name || 'Unknown Name'}&quot;
           </strong>
           ? This action cannot be undone.
         </span>

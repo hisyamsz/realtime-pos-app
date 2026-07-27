@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  startTransition,
-  useActionState,
-  useEffect,
-  useMemo,
-} from 'react';
+import { startTransition, useActionState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -142,7 +137,7 @@ export default function DialogUpdateUser({
         form={form}
         onSubmit={onSubmit}
         isPending={isPendingUpdateUser}
-        submitLabel="Update User"
+        submitLabel="Update user"
         type="update"
         isRoleDisabled={isSelf}
         isSubmitDisabled={!isChanged}

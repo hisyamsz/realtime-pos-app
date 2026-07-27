@@ -48,6 +48,7 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
       className="sm:max-w-[500px]"
       onInteractOutside={(e) => e.preventDefault()}
       onEscapeKeyDown={(e) => e.preventDefault()}
+      showCloseButton={!isPending}
     >
       <DialogHeader>
         <DialogTitle>
@@ -130,7 +131,7 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
             >
               {isPending ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 </>
               ) : (
                 submitLabel
