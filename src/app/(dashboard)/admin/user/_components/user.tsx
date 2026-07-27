@@ -119,7 +119,9 @@ export default function UserManagement() {
               ),
               variant: 'destructive',
               disabled: isSelf,
-              tooltip: isSelf ? 'You cannot delete your own account' : undefined,
+              tooltip: isSelf
+                ? 'You cannot delete your own account'
+                : undefined,
               action: () => {
                 if (isSelf) return;
                 setSelectedAction({ data: user, type: 'delete' });

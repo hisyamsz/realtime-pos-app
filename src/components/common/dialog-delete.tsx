@@ -47,19 +47,13 @@ export default function DialogDelete({
         </DialogHeader>
         <DialogFooter className="mt-2 flex items-center gap-4 sm:gap-2">
           <DialogClose asChild>
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              disabled={isPending}
-            >
+            <Button type="button" variant="ghost" disabled={isPending}>
               {cancelLabel}
             </Button>
           </DialogClose>
           <Button
             type="button"
             variant="destructive"
-            size="lg"
             onClick={onConfirm}
             disabled={isPending}
           >

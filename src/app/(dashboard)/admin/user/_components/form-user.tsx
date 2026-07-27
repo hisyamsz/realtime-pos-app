@@ -111,8 +111,7 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
             <DialogClose asChild>
               <Button
                 type="button"
-                variant="secondary"
-                size="lg"
+                variant="ghost"
                 className="w-full sm:w-auto"
                 disabled={isPending}
               >
@@ -121,7 +120,6 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
             </DialogClose>
             <Button
               type="submit"
-              size="sm"
               className="w-full sm:w-auto"
               disabled={isPending || isSubmitDisabled}
               title={
