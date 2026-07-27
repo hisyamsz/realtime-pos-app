@@ -35,14 +35,6 @@ export default function UserManagement() {
     handleChangeLimit,
   } = useDataTable();
 
-  const handleEdit = (user: Profile) => {
-    setSelectedAction({ data: user, type: 'update' });
-  };
-
-  const handleDelete = (user: Profile) => {
-    setSelectedAction({ data: user, type: 'delete' });
-  };
-
   const handleCloseDialog = (open: boolean) => {
     if (!open) setSelectedAction(null);
   };
@@ -109,7 +101,9 @@ export default function UserManagement() {
                   Edit
                 </span>
               ),
-              action: () => handleEdit(user),
+              action: () => {
+                setSelectedAction({ data: user, type: 'update' });
+              },
             },
             {
               label: (
@@ -119,7 +113,9 @@ export default function UserManagement() {
                 </span>
               ),
               variant: 'destructive',
-              action: () => handleDelete(user),
+              action: () => {
+                setSelectedAction({ data: user, type: 'delete' });
+              },
             },
           ]}
         />,
