@@ -1,6 +1,12 @@
 'use client';
 
-import { type ReactNode, createContext, useRef, useContext } from 'react';
+import {
+  type ReactNode,
+  createContext,
+  useRef,
+  useContext,
+  useEffect,
+} from 'react';
 import { useStore } from 'zustand';
 import { User } from '@supabase/supabase-js';
 import {
@@ -35,6 +41,13 @@ export const AuthStoreProvider = ({
       user: initialUser ?? defaultInitState.user,
     });
   }
+
+  useEffect(() => {
+    storeRef.current?.setState({
+      profile: initialProfile ?? defaultInitState.profile,
+      user: initialUser ?? defaultInitState.user,
+    });
+  }, [initialProfile, initialUser]);
 
   return (
     <AuthStoreContext.Provider value={storeRef.current}>
