@@ -17,7 +17,9 @@ export async function createClient({ isAdmin = false }: CreateClientOptions) {
     {
       cookies: {
         getAll() {
-          return cookieStore.getAll();
+          return cookieStore
+            .getAll()
+            .filter((cookie) => cookie.name.startsWith('sb-'));
         },
         setAll(cookiesToSet) {
           try {
