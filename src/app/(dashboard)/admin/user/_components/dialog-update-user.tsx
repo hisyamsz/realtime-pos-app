@@ -20,7 +20,7 @@ import {
 } from '@/constants/auth-constants';
 import { updateUser } from '../action';
 import { Profile } from '@/types/auth';
-import { useAuthStore } from '@/providers/auth-store-provider';
+import { useIsSelf } from '@/hooks/use-is-self';
 
 interface DialogUpdateUserProps {
   refetch?: () => void;
@@ -35,10 +35,7 @@ export default function DialogUpdateUser({
   open,
   handleChangeAction,
 }: DialogUpdateUserProps) {
-  const currentUserId = useAuthStore(
-    (state) => state.profile?.id || state.user?.id,
-  );
-  const isSelf = Boolean(currentUserId && currentData?.id === currentUserId);
+  const isSelf = useIsSelf(currentData?.id);
 
   const form = useForm<UpdateUserForm>({
     resolver: zodResolver(updateUserSchema),

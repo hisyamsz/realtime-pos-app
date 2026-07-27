@@ -1,8 +1,9 @@
 'use server';
 
-import { uploadFile } from '@/actions/storage-action';
+import { deleteFile, uploadFile } from '@/actions/storage-action';
 import { createClient } from '@/lib/supabase/server';
 import { CreateUserFormState, UpdateUserFormState } from '@/types/auth';
+import { BaseFormState } from '@/types/general';
 import {
   createUserSchema,
   updateUserSchema,
@@ -230,3 +231,95 @@ export async function updateUser(
     message: 'User updated successfully',
   };
 }
+
+export async function deleteUser(
+  prevState: BaseFormState,
+  formData: FormData,
+): Promise<BaseFormState> {
+  const id = formData.get('id') as string;
+
+  if (!id) {
+    return {
+      status: 'error',
+      errors: {
+        ...prevState?.errors,
+        _form: ['User ID is required'],
+      },
+    };
+  }
+
+  const auth = await verifyAdminAuth('delete users');
+  if (!auth.isAuthorized) {
+    return {
+      status: 'error',
+      errors: { ...prevState?.errors, _form: [auth.error!] },
+    };
+  }
+
+  const clientSupabase = await createClient({});
+  const {
+    data: { user: currentUser },
+  } = await clientSupabase.auth.getUser();
+
+  if (currentUser?.id === id) {
+    return {
+      status: 'error',
+      errors: {
+        ...prevState?.errors,
+        _form: ['Admins cannot delete their own account'],
+      },
+    };
+  }
+
+  const supabase = await createClient({ isAdmin: true });
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('avatar_url')
+    .eq('id', id)
+    .single();
+
+  if (profile?.avatar_url) {
+    const prevPath = profile.avatar_url.split('/images/')[1];
+    if (prevPath) {
+      const fileDeleteResult = await deleteFile('images', prevPath);
+      if (
+        fileDeleteResult.status === 'error' &&
+        fileDeleteResult.errors?._form?.[0]
+      ) {
+        const errorMsg = fileDeleteResult.errors._form[0].toLowerCase();
+        const isNotFound =
+          errorMsg.includes('not found') || errorMsg.includes('404');
+
+        if (!isNotFound) {
+          return {
+            status: 'error',
+            errors: {
+              ...prevState?.errors,
+              _form: [fileDeleteResult.errors._form[0]],
+            },
+          };
+        }
+      }
+    }
+  }
+
+  const { error } = await supabase.auth.admin.deleteUser(id);
+
+  if (error) {
+    return {
+      status: 'error',
+      errors: {
+        ...prevState?.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return {
+    status: 'success',
+    errors: {},
+    message: 'User deleted successfully',
+  };
+}
+

@@ -13,14 +13,17 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import DataTable from '@/components/common/data-table';
 import DialogCreateUser from './dialog-create-user';
 import DialogUpdateUser from './dialog-update-user';
+import DialogDeleteUser from './dialog-delete-user';
 import DropdownAction from '@/components/common/dropdown-action';
 import { HEADER_TABLE_USER } from '@/constants/user-constants';
 import { DEFAULT_PAGE } from '@/constants/data-table-constants';
 import useDataTable from '@/hooks/use-data-table';
+import { checkIsSelf, useCurrentUserId } from '@/hooks/use-is-self';
 import { Profile } from '@/types/auth';
 
 export default function UserManagement() {
   const supabase = createClient();
+  const currentUserId = useCurrentUserId();
   const [selectedAction, setSelectedAction] = useState<{
     data?: Profile | null;
     type: 'create' | 'update' | 'delete';
@@ -74,6 +77,8 @@ export default function UserManagement() {
 
   const filteredData = useMemo(() => {
     return (users?.profiles || []).map((user, index) => {
+      const isSelf = checkIsSelf(currentUserId, user.id);
+
       return [
         (page - 1) * limit + index + 1,
         user.id,
@@ -113,7 +118,10 @@ export default function UserManagement() {
                 </span>
               ),
               variant: 'destructive',
+              disabled: isSelf,
+              tooltip: isSelf ? 'You cannot delete your own account' : undefined,
               action: () => {
+                if (isSelf) return;
                 setSelectedAction({ data: user, type: 'delete' });
               },
             },
@@ -121,7 +129,7 @@ export default function UserManagement() {
         />,
       ];
     });
-  }, [users?.profiles, page, limit]);
+  }, [users?.profiles, page, limit, currentUserId]);
 
   return (
     <div className="space-y-4">
@@ -162,6 +170,15 @@ export default function UserManagement() {
           handleChangeAction={handleCloseDialog}
           currentData={
             selectedAction?.type === 'update' ? selectedAction.data : null
+          }
+          refetch={refetch}
+        />
+
+        <DialogDeleteUser
+          open={selectedAction?.type === 'delete'}
+          handleChangeAction={handleCloseDialog}
+          currentData={
+            selectedAction?.type === 'delete' ? selectedAction.data : null
           }
           refetch={refetch}
         />
