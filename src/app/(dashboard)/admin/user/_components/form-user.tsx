@@ -28,6 +28,7 @@ interface FormUserProps<T extends FieldValues> {
   submitLabel: string;
   type: 'create' | 'update';
   isRoleDisabled?: boolean;
+  isSubmitDisabled?: boolean;
 }
 
 export function FormUser<T extends CreateUserForm | UpdateUserForm>({
@@ -37,6 +38,7 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
   submitLabel = 'Create User',
   type,
   isRoleDisabled = false,
+  isSubmitDisabled = false,
 }: FormUserProps<T>) {
   const isCreate = type === 'create';
   const control = form.control as unknown as Control<CreateUserForm>;
@@ -46,6 +48,7 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
       className="sm:max-w-[500px]"
       onInteractOutside={(e) => e.preventDefault()}
       onEscapeKeyDown={(e) => e.preventDefault()}
+      showCloseButton={!isPending}
     >
       <DialogHeader>
         <DialogTitle>
@@ -109,8 +112,7 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
             <DialogClose asChild>
               <Button
                 type="button"
-                variant="secondary"
-                size="lg"
+                variant="ghost"
                 className="w-full sm:w-auto"
                 disabled={isPending}
               >
@@ -119,13 +121,17 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
             </DialogClose>
             <Button
               type="submit"
-              size="sm"
               className="w-full sm:w-auto"
-              disabled={isPending}
+              disabled={isPending || isSubmitDisabled}
+              title={
+                isSubmitDisabled
+                  ? 'Please modify at least one valid field to submit'
+                  : undefined
+              }
             >
               {isPending ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 </>
               ) : (
                 submitLabel

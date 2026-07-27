@@ -1,5 +1,12 @@
-import { CreateUserFormState, LoginFormState, Profile, UpdateUserFormState } from '@/types/auth';
+import {
+  CreateUserFormState,
+  LoginFormState,
+  Profile,
+  UpdateUserFormState,
+} from '@/types/auth';
 import { CreateUserForm, UpdateUserForm } from '@/validation/auth-validation';
+
+export const HAS_LETTER_OR_NUMBER_REGEX = /[\p{L}\p{N}]/u;
 
 export const INITIAL_LOGIN_FORM = {
   email: '',

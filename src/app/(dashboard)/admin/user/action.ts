@@ -1,86 +1,65 @@
 'use server';
 
-import z from 'zod';
+import { deleteFile, uploadFile } from '@/actions/storage-action';
 import { createClient } from '@/lib/supabase/server';
 import { CreateUserFormState, UpdateUserFormState } from '@/types/auth';
-import { createUserSchema, updateUserSchema } from '@/validation/auth-validation';
-import { uploadFile } from '@/actions/storage-action';
-import { INITIAL_STATE_UPDATE_USER } from '@/constants/auth-constants';
+import { BaseFormState } from '@/types/general';
+import {
+  createUserSchema,
+  updateUserSchema,
+} from '@/validation/auth-validation';
 
 async function verifyAdminAuth(actionName: string) {
-  const authClient = await createClient({});
+  const supabase = await createClient({});
   const {
     data: { user },
-  } = await authClient.auth.getUser();
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    return { isAuthorized: false, error: 'Unauthorized: You must be logged in' };
+    return {
+      isAuthorized: false,
+      error: 'Unauthorized: You must be logged in',
+    };
   }
 
-  const { data: profile } = await authClient
+  const { data: profile } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single();
 
   if (profile?.role !== 'admin') {
-    return { isAuthorized: false, error: `Forbidden: Only admins can ${actionName}` };
+    return {
+      isAuthorized: false,
+      error: `Forbidden: Only admins can ${actionName}`,
+    };
   }
 
-  return { isAuthorized: true, user };
-}
-
-async function handleAvatarUpload(avatarUrl: unknown): Promise<{ avatarUrlString?: string; error?: string }> {
-  if (avatarUrl instanceof File && avatarUrl.size > 0) {
-    const uploadResult = await uploadFile('images', 'users', avatarUrl);
-    if (uploadResult.status === 'error') {
-      return { error: uploadResult.errors?._form?.[0] || 'Failed to upload avatar image' };
-    }
-    return { avatarUrlString: uploadResult.data?.url };
-  }
-
-  if (typeof avatarUrl === 'string' && avatarUrl.length > 0) {
-    return { avatarUrlString: avatarUrl };
-  }
-
-  return { avatarUrlString: undefined };
+  return { isAuthorized: true };
 }
 
 export async function createUser(
   prevState: CreateUserFormState,
-  formData: FormData | null,
+  formData: FormData,
 ): Promise<CreateUserFormState> {
-  if (!formData) {
-    return {
-      status: 'idle',
-      errors: {
-        email: [],
-        password: [],
-        name: [],
-        role: [],
-        avatar_url: [],
-        _form: [],
-      },
-    };
-  }
   const avatarFile = formData.get('avatar_url');
-  const hasAvatarFile = avatarFile instanceof File && avatarFile.size > 0;
-  const hasAvatarString = typeof avatarFile === 'string' && avatarFile.length > 0;
 
   const validatedFields = createUserSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
     name: formData.get('name'),
     role: formData.get('role'),
-    avatar_url: hasAvatarFile ? avatarFile : (hasAvatarString ? avatarFile : undefined),
+    avatar_url:
+      avatarFile instanceof File && avatarFile.size > 0
+        ? avatarFile
+        : undefined,
   });
 
   if (!validatedFields.success) {
-    const fieldErrors = z.flattenError(validatedFields.error).fieldErrors;
     return {
       status: 'error',
       errors: {
-        ...fieldErrors,
+        ...validatedFields.error.flatten().fieldErrors,
         _form: [],
       },
     };
@@ -90,22 +69,31 @@ export async function createUser(
   if (!auth.isAuthorized) {
     return {
       status: 'error',
-      errors: { _form: [auth.error!] },
+      errors: { ...prevState?.errors, _form: [auth.error!] },
     };
   }
 
-  const avatarResult = await handleAvatarUpload(validatedFields.data.avatar_url);
-  if (avatarResult.error) {
-    return {
-      status: 'error',
-      errors: {
-        ...prevState.errors,
-        _form: [avatarResult.error],
-      },
-    };
+  let avatarUrl: string | undefined = undefined;
+
+  if (validatedFields.data.avatar_url instanceof File) {
+    const { errors, data } = await uploadFile(
+      'images',
+      'users',
+      validatedFields.data.avatar_url,
+    );
+
+    if (errors || !data) {
+      return {
+        status: 'error',
+        errors: {
+          ...prevState?.errors,
+          _form: errors?._form || ['Failed to upload avatar'],
+        },
+      };
+    }
+    avatarUrl = data.url;
   }
 
-  const avatarUrlString = avatarResult.avatarUrlString;
   const supabase = await createClient({ isAdmin: true });
 
   const { error } = await supabase.auth.admin.createUser({
@@ -114,7 +102,7 @@ export async function createUser(
     user_metadata: {
       name: validatedFields.data.name,
       role: validatedFields.data.role,
-      avatar_url: avatarUrlString,
+      avatar_url: avatarUrl,
     },
     email_confirm: true,
   });
@@ -123,7 +111,7 @@ export async function createUser(
     return {
       status: 'error',
       errors: {
-        ...prevState.errors,
+        ...prevState?.errors,
         _form: [error.message],
       },
     };
@@ -138,29 +126,25 @@ export async function createUser(
 
 export async function updateUser(
   prevState: UpdateUserFormState,
-  formData: FormData | null,
+  formData: FormData,
 ): Promise<UpdateUserFormState> {
-  if (!formData) {
-    return INITIAL_STATE_UPDATE_USER;
-  }
-
   const avatarFile = formData.get('avatar_url');
-  const hasAvatarFile = avatarFile instanceof File && avatarFile.size > 0;
-  const hasAvatarString = typeof avatarFile === 'string' && avatarFile.length > 0;
 
   const validatedFields = updateUserSchema.safeParse({
     id: formData.get('id'),
     name: formData.get('name'),
     role: formData.get('role'),
-    avatar_url: hasAvatarFile ? avatarFile : (hasAvatarString ? avatarFile : undefined),
+    avatar_url:
+      avatarFile instanceof File && avatarFile.size > 0
+        ? avatarFile
+        : undefined,
   });
 
   if (!validatedFields.success) {
-    const fieldErrors = z.flattenError(validatedFields.error).fieldErrors;
     return {
       status: 'error',
       errors: {
-        ...fieldErrors,
+        ...validatedFields.error.flatten().fieldErrors,
         _form: [],
       },
     };
@@ -170,31 +154,49 @@ export async function updateUser(
   if (!auth.isAuthorized) {
     return {
       status: 'error',
-      errors: { _form: [auth.error!] },
+      errors: { ...prevState?.errors, _form: [auth.error!] },
     };
   }
 
-  const avatarResult = await handleAvatarUpload(validatedFields.data.avatar_url);
-  if (avatarResult.error) {
-    return {
-      status: 'error',
-      errors: {
-        ...prevState.errors,
-        _form: [avatarResult.error],
-      },
-    };
+  let avatarUrl: string | undefined =
+    typeof formData.get('avatar_url') === 'string'
+      ? (formData.get('avatar_url') as string)
+      : undefined;
+
+  if (validatedFields.data.avatar_url instanceof File) {
+    const oldAvatarUrl = formData.get('old_avatar_url') as string | null;
+    const prevPath = oldAvatarUrl
+      ? oldAvatarUrl.split('/images/')[1]
+      : undefined;
+
+    const { errors, data } = await uploadFile(
+      'images',
+      'users',
+      validatedFields.data.avatar_url,
+      prevPath,
+    );
+
+    if (errors || !data) {
+      return {
+        status: 'error',
+        errors: {
+          ...prevState?.errors,
+          _form: errors?._form || ['Failed to upload avatar'],
+        },
+      };
+    }
+    avatarUrl = data.url;
   }
 
   const supabase = await createClient({ isAdmin: true });
   const { id, name, role } = validatedFields.data;
-  const avatar_url = avatarResult.avatarUrlString;
 
   const { error: profileError } = await supabase
     .from('profiles')
     .update({
       name,
       role,
-      avatar_url,
+      avatar_url: avatarUrl ?? null,
       updated_at: new Date().toISOString(),
     })
     .eq('id', id);
@@ -203,21 +205,21 @@ export async function updateUser(
     return {
       status: 'error',
       errors: {
-        ...prevState.errors,
+        ...prevState?.errors,
         _form: [profileError.message],
       },
     };
   }
 
   const { error: authError } = await supabase.auth.admin.updateUserById(id, {
-    user_metadata: { name, role, avatar_url },
+    user_metadata: { name, role, avatar_url: avatarUrl ?? null },
   });
 
   if (authError) {
     return {
       status: 'error',
       errors: {
-        ...prevState.errors,
+        ...prevState?.errors,
         _form: [authError.message],
       },
     };
@@ -229,3 +231,95 @@ export async function updateUser(
     message: 'User updated successfully',
   };
 }
+
+export async function deleteUser(
+  prevState: BaseFormState,
+  formData: FormData,
+): Promise<BaseFormState> {
+  const id = formData.get('id') as string;
+
+  if (!id) {
+    return {
+      status: 'error',
+      errors: {
+        ...prevState?.errors,
+        _form: ['User ID is required'],
+      },
+    };
+  }
+
+  const auth = await verifyAdminAuth('delete users');
+  if (!auth.isAuthorized) {
+    return {
+      status: 'error',
+      errors: { ...prevState?.errors, _form: [auth.error!] },
+    };
+  }
+
+  const clientSupabase = await createClient({});
+  const {
+    data: { user: currentUser },
+  } = await clientSupabase.auth.getUser();
+
+  if (currentUser?.id === id) {
+    return {
+      status: 'error',
+      errors: {
+        ...prevState?.errors,
+        _form: ['Admins cannot delete their own account'],
+      },
+    };
+  }
+
+  const supabase = await createClient({ isAdmin: true });
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('avatar_url')
+    .eq('id', id)
+    .single();
+
+  if (profile?.avatar_url) {
+    const prevPath = profile.avatar_url.split('/images/')[1];
+    if (prevPath) {
+      const fileDeleteResult = await deleteFile('images', prevPath);
+      if (
+        fileDeleteResult.status === 'error' &&
+        fileDeleteResult.errors?._form?.[0]
+      ) {
+        const errorMsg = fileDeleteResult.errors._form[0].toLowerCase();
+        const isNotFound =
+          errorMsg.includes('not found') || errorMsg.includes('404');
+
+        if (!isNotFound) {
+          return {
+            status: 'error',
+            errors: {
+              ...prevState?.errors,
+              _form: [fileDeleteResult.errors._form[0]],
+            },
+          };
+        }
+      }
+    }
+  }
+
+  const { error } = await supabase.auth.admin.deleteUser(id);
+
+  if (error) {
+    return {
+      status: 'error',
+      errors: {
+        ...prevState?.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return {
+    status: 'success',
+    errors: {},
+    message: 'User deleted successfully',
+  };
+}
+

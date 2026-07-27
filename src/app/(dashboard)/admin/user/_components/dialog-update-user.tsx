@@ -1,6 +1,6 @@
 'use client';
 
-import { startTransition, useActionState, useEffect, useState } from 'react';
+import { startTransition, useActionState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -9,25 +9,28 @@ import { Dialog } from '@/components/ui/dialog';
 import { FormUser } from './form-user';
 
 import { updateUserSchema, UpdateUserForm } from '@/validation/auth-validation';
-import { INITIAL_STATE_UPDATE_USER } from '@/constants/auth-constants';
+import {
+  INITIAL_STATE_UPDATE_USER,
+  HAS_LETTER_OR_NUMBER_REGEX,
+} from '@/constants/auth-constants';
 import { updateUser } from '../action';
 import { Profile } from '@/types/auth';
-import { Preview } from '@/types/general';
-import { useAuthStore } from '@/providers/auth-store-provider';
+import { useIsSelf } from '@/hooks/use-is-self';
+
+interface DialogUpdateUserProps {
+  refetch?: () => void;
+  currentData?: Profile | null;
+  open?: boolean;
+  handleChangeAction?: (open: boolean) => void;
+}
 
 export default function DialogUpdateUser({
   refetch,
   currentData,
   open,
   handleChangeAction,
-}: {
-  refetch?: () => void;
-  currentData?: Profile | null;
-  open?: boolean;
-  handleChangeAction?: (open: boolean) => void;
-}) {
-  const currentUserId = useAuthStore((state) => state.profile?.id || state.user?.id);
-  const isSelf = Boolean(currentUserId && currentData?.id === currentUserId);
+}: DialogUpdateUserProps) {
+  const isSelf = useIsSelf(currentData?.id);
 
   const form = useForm<UpdateUserForm>({
     resolver: zodResolver(updateUserSchema),
@@ -36,9 +39,44 @@ export default function DialogUpdateUser({
   const [updateUserState, updateUserAction, isPendingUpdateUser] =
     useActionState(updateUser, INITIAL_STATE_UPDATE_USER);
 
-  const [preview, setPreview] = useState<Preview | undefined>(undefined);
+  const watchedName = form.watch('name');
+  const watchedRole = form.watch('role');
+  const watchedAvatarUrl = form.watch('avatar_url');
+
+  const isChanged = useMemo(() => {
+    if (!currentData || !open) return false;
+
+    const trimmedWatchedName = (watchedName ?? '').trim();
+    const isNameValid =
+      trimmedWatchedName.length > 0 &&
+      HAS_LETTER_OR_NUMBER_REGEX.test(trimmedWatchedName);
+
+    if (!isNameValid) return false;
+
+    const isNameChanged =
+      trimmedWatchedName !== (currentData.name ?? '').trim();
+    const isRoleChanged = watchedRole !== currentData.role;
+
+    let isAvatarChanged = false;
+    if (watchedAvatarUrl instanceof File) {
+      isAvatarChanged = true;
+    } else {
+      const currentAvatar = currentData.avatar_url || null;
+      const formAvatar = watchedAvatarUrl || null;
+      isAvatarChanged = formAvatar !== currentAvatar;
+    }
+
+    return isNameChanged || isRoleChanged || isAvatarChanged;
+  }, [currentData, open, watchedName, watchedRole, watchedAvatarUrl]);
 
   const onSubmit = form.handleSubmit((data) => {
+    if (!isChanged) {
+      toast.info('No changes detected', {
+        description: 'Please modify at least one field before updating.',
+      });
+      return;
+    }
+
     if (isSelf && data.role !== 'admin') {
       toast.error('Update User Failed', {
         description: 'Admins cannot change their own role',
@@ -48,24 +86,17 @@ export default function DialogUpdateUser({
     }
 
     const formData = new FormData();
-    if (currentData?.avatar_url !== data.avatar_url) {
-      Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          formData.append(
-            key,
-            key === 'avatar_url' ? preview?.file ?? '' : (value as any),
-          );
-        }
-      });
-      formData.append('old_avatar_url', currentData?.avatar_url ?? '');
-    } else {
-      Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          formData.append(key, value as any);
-        }
-      });
-    }
     formData.append('id', currentData?.id ?? '');
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined) {
+        formData.append(key, value === null ? '' : (value as any));
+      }
+    });
+
+    if (currentData?.avatar_url && currentData.avatar_url !== data.avatar_url) {
+      formData.append('old_avatar_url', currentData.avatar_url);
+    }
 
     startTransition(() => {
       updateUserAction(formData);
@@ -77,9 +108,6 @@ export default function DialogUpdateUser({
       toast.error('Update User Failed', {
         description: updateUserState.errors?._form?.[0],
       });
-      if (currentData) {
-        form.setValue('role', currentData.role as string);
-      }
     }
 
     if (updateUserState?.status === 'success') {
@@ -92,21 +120,14 @@ export default function DialogUpdateUser({
 
   useEffect(() => {
     if (currentData && open) {
-      form.setValue('id', currentData.id as string);
-      form.setValue('name', currentData.name as string);
-      form.setValue('role', currentData.role as string);
-      form.setValue('avatar_url', currentData.avatar_url as string);
-      if (currentData.avatar_url) {
-        setPreview({
-          file: new File([], currentData.avatar_url as string),
-          displayUrl: currentData.avatar_url as string,
-        });
-      } else {
-        setPreview(undefined);
-      }
+      form.reset({
+        id: currentData.id as string,
+        name: currentData.name as string,
+        role: currentData.role as string,
+        avatar_url: currentData.avatar_url as string,
+      });
     } else if (!open) {
       form.reset();
-      setPreview(undefined);
     }
   }, [currentData, open, form]);
 
@@ -116,9 +137,10 @@ export default function DialogUpdateUser({
         form={form}
         onSubmit={onSubmit}
         isPending={isPendingUpdateUser}
-        submitLabel="Update User"
+        submitLabel="Update user"
         type="update"
         isRoleDisabled={isSelf}
+        isSubmitDisabled={!isChanged}
       />
     </Dialog>
   );

@@ -5,26 +5,28 @@ import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Search, UserPlus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import DataTable from '@/components/common/data-table';
 import DialogCreateUser from './dialog-create-user';
 import DialogUpdateUser from './dialog-update-user';
+import DialogDeleteUser from './dialog-delete-user';
 import DropdownAction from '@/components/common/dropdown-action';
 import { HEADER_TABLE_USER } from '@/constants/user-constants';
 import { DEFAULT_PAGE } from '@/constants/data-table-constants';
 import useDataTable from '@/hooks/use-data-table';
+import { checkIsSelf, useCurrentUserId } from '@/hooks/use-is-self';
 import { Profile } from '@/types/auth';
 
 export default function UserManagement() {
   const supabase = createClient();
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const currentUserId = useCurrentUserId();
   const [selectedAction, setSelectedAction] = useState<{
-    data: Profile;
-    type: 'update' | 'delete';
+    data?: Profile | null;
+    type: 'create' | 'update' | 'delete';
   } | null>(null);
 
   const {
@@ -36,12 +38,8 @@ export default function UserManagement() {
     handleChangeLimit,
   } = useDataTable();
 
-  const handleEdit = (user: Profile) => {
-    setSelectedAction({ data: user, type: 'update' });
-  };
-
-  const handleDelete = (user: Profile) => {
-    setSelectedAction({ data: user, type: 'delete' });
+  const handleCloseDialog = (open: boolean) => {
+    if (!open) setSelectedAction(null);
   };
 
   const {
@@ -79,6 +77,8 @@ export default function UserManagement() {
 
   const filteredData = useMemo(() => {
     return (users?.profiles || []).map((user, index) => {
+      const isSelf = checkIsSelf(currentUserId, user.id);
+
       return [
         (page - 1) * limit + index + 1,
         user.id,
@@ -106,7 +106,9 @@ export default function UserManagement() {
                   Edit
                 </span>
               ),
-              action: () => handleEdit(user),
+              action: () => {
+                setSelectedAction({ data: user, type: 'update' });
+              },
             },
             {
               label: (
@@ -116,18 +118,25 @@ export default function UserManagement() {
                 </span>
               ),
               variant: 'destructive',
-              action: () => handleDelete(user),
+              disabled: isSelf,
+              tooltip: isSelf
+                ? 'You cannot delete your own account'
+                : undefined,
+              action: () => {
+                if (isSelf) return;
+                setSelectedAction({ data: user, type: 'delete' });
+              },
             },
           ]}
         />,
       ];
     });
-  }, [users?.profiles, page, limit]);
+  }, [users?.profiles, page, limit, currentUserId]);
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-        <div className="relative w-full sm:w-2/5">
+        <div className="relative w-full sm:w-1/2 lg:w-2/5">
           <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" />
           <Input
             type="search"
@@ -137,28 +146,42 @@ export default function UserManagement() {
           />
         </div>
 
-        <Button
-          variant="outline"
-          size="xl"
-          className="group w-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 sm:w-auto"
-          onClick={() => setIsCreateOpen(true)}
+        <Dialog
+          open={selectedAction?.type === 'create'}
+          onOpenChange={handleCloseDialog}
         >
-          <UserPlus className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-          Create User
-        </Button>
-
-        <DialogCreateUser
-          open={isCreateOpen}
-          handleChangeAction={setIsCreateOpen}
-          refetch={refetch}
-        />
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              size="xl"
+              className="group w-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 sm:w-auto"
+              onClick={() => setSelectedAction({ type: 'create' })}
+            >
+              <UserPlus className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+              Create User
+            </Button>
+          </DialogTrigger>
+          <DialogCreateUser
+            refetch={refetch}
+            onClose={() => handleCloseDialog(false)}
+          />
+        </Dialog>
 
         <DialogUpdateUser
           open={selectedAction?.type === 'update'}
-          handleChangeAction={(open) => {
-            if (!open) setSelectedAction(null);
-          }}
-          currentData={selectedAction?.type === 'update' ? selectedAction.data : null}
+          handleChangeAction={handleCloseDialog}
+          currentData={
+            selectedAction?.type === 'update' ? selectedAction.data : null
+          }
+          refetch={refetch}
+        />
+
+        <DialogDeleteUser
+          open={selectedAction?.type === 'delete'}
+          handleChangeAction={handleCloseDialog}
+          currentData={
+            selectedAction?.type === 'delete' ? selectedAction.data : null
+          }
           refetch={refetch}
         />
       </div>

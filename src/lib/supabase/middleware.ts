@@ -12,7 +12,9 @@ export async function updateSession(request: NextRequest) {
   const supabase = createServerClient(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
     cookies: {
       getAll() {
-        return request.cookies.getAll();
+        return request.cookies
+          .getAll()
+          .filter((cookie) => cookie.name.startsWith('sb-'));
       },
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value }) =>

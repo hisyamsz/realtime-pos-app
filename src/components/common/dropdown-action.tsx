@@ -16,6 +16,8 @@ export default function DropdownAction({
     variant?: 'destructive' | 'default';
     action?: () => void;
     type?: 'item' | 'link';
+    disabled?: boolean;
+    tooltip?: string;
   }[];
 }) {
   return (
@@ -35,7 +37,9 @@ export default function DropdownAction({
             key={`dropdown-action-${index}`}
             variant={item.variant || 'default'}
             asChild={item.type === 'link'}
-            className="cursor-pointer"
+            disabled={item.disabled}
+            title={item.tooltip}
+            className="cursor-pointer data-[disabled]:pointer-events-auto data-[disabled]:cursor-not-allowed"
             onClick={item.action}
           >
             {item.label}
