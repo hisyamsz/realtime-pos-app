@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 
-import { Dialog } from '@/components/ui/dialog';
 import { FormUser } from './form-user';
 
 import { createUserSchema, CreateUserForm } from '@/validation/auth-validation';
@@ -17,14 +16,12 @@ import { createUser } from '../action';
 
 interface DialogCreateUserProps {
   refetch?: () => void;
-  open?: boolean;
-  handleChangeAction?: (open: boolean) => void;
+  onClose?: () => void;
 }
 
 export default function DialogCreateUser({
   refetch,
-  open,
-  handleChangeAction,
+  onClose,
 }: DialogCreateUserProps) {
   const form = useForm<CreateUserForm>({
     resolver: zodResolver(createUserSchema),
@@ -57,26 +54,18 @@ export default function DialogCreateUser({
     if (createUserState?.status === 'success') {
       toast.success(createUserState.message || 'Create User Success');
       form.reset();
-      handleChangeAction?.(false);
+      onClose?.();
       refetch?.();
     }
   }, [createUserState]);
 
-  useEffect(() => {
-    if (!open) {
-      form.reset();
-    }
-  }, [open, form]);
-
   return (
-    <Dialog open={open} onOpenChange={handleChangeAction}>
-      <FormUser
-        form={form}
-        onSubmit={onSubmit}
-        isPending={isPendingCreateUser}
-        submitLabel="Create User"
-        type="create"
-      />
-    </Dialog>
+    <FormUser
+      form={form}
+      onSubmit={onSubmit}
+      isPending={isPendingCreateUser}
+      submitLabel="Create User"
+      type="create"
+    />
   );
 }

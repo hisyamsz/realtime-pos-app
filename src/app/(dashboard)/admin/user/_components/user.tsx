@@ -5,11 +5,11 @@ import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Search, UserPlus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import DataTable from '@/components/common/data-table';
 import DialogCreateUser from './dialog-create-user';
 import DialogUpdateUser from './dialog-update-user';
@@ -21,10 +21,9 @@ import { Profile } from '@/types/auth';
 
 export default function UserManagement() {
   const supabase = createClient();
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<{
-    data: Profile;
-    type: 'update' | 'delete';
+    data?: Profile | null;
+    type: 'create' | 'update' | 'delete';
   } | null>(null);
 
   const {
@@ -42,6 +41,10 @@ export default function UserManagement() {
 
   const handleDelete = (user: Profile) => {
     setSelectedAction({ data: user, type: 'delete' });
+  };
+
+  const handleCloseDialog = (open: boolean) => {
+    if (!open) setSelectedAction(null);
   };
 
   const {
@@ -137,28 +140,33 @@ export default function UserManagement() {
           />
         </div>
 
-        <Button
-          variant="outline"
-          size="xl"
-          className="group w-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 sm:w-auto"
-          onClick={() => setIsCreateOpen(true)}
+        <Dialog
+          open={selectedAction?.type === 'create'}
+          onOpenChange={handleCloseDialog}
         >
-          <UserPlus className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-          Create User
-        </Button>
-
-        <DialogCreateUser
-          open={isCreateOpen}
-          handleChangeAction={setIsCreateOpen}
-          refetch={refetch}
-        />
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              size="xl"
+              className="group w-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 sm:w-auto"
+              onClick={() => setSelectedAction({ type: 'create' })}
+            >
+              <UserPlus className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+              Create User
+            </Button>
+          </DialogTrigger>
+          <DialogCreateUser
+            refetch={refetch}
+            onClose={() => handleCloseDialog(false)}
+          />
+        </Dialog>
 
         <DialogUpdateUser
           open={selectedAction?.type === 'update'}
-          handleChangeAction={(open) => {
-            if (!open) setSelectedAction(null);
-          }}
-          currentData={selectedAction?.type === 'update' ? selectedAction.data : null}
+          handleChangeAction={handleCloseDialog}
+          currentData={
+            selectedAction?.type === 'update' ? selectedAction.data : null
+          }
           refetch={refetch}
         />
       </div>
