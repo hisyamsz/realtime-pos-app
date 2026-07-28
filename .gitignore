@@ -45,4 +45,6 @@ graphify-out/
 
 # ai agent config
 .gemini/
+.scratch/
+
 
