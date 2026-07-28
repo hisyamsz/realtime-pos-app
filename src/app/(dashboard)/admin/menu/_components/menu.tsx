@@ -16,7 +16,7 @@ import { HEADER_TABLE_MENU } from '@/constants/menu-constants';
 import { DEFAULT_PAGE } from '@/constants/data-table-constants';
 import useDataTable from '@/hooks/use-data-table';
 import { formatRupiah } from '@/lib/utils';
-import { Menu } from '@/types/menu';
+import { Menu } from '@/validation/menu-validation';
 
 export default function MenuManagement() {
   const supabase = createClient();
@@ -74,7 +74,7 @@ export default function MenuManagement() {
     return (menus?.items || []).map((menu, index) => {
       return [
         (page - 1) * limit + index + 1,
-        menu.image_url ? (
+        typeof menu.image_url === 'string' && menu.image_url ? (
           <div
             key={`img-${menu.id}`}
             className="bg-muted relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg border"
