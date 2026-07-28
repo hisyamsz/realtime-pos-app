@@ -1,25 +1,25 @@
 # Workspace Rules
 
-Aturan proyek wajib dipatuhi tiap tugas:
+Mandatory project rules per task:
 
-## Inisialisasi Sesi Baru (New Session Context)
+## New Session Context
 
-Saat sesi baru dibuka/dibuat, AI agent jalankan langkah awal efisien:
+On session start, agent run initial steps:
 
-1. **Pemahaman Arsitektur (Graphify Knowledge Base)**:
-   - **Jangan scan folder / grep manual satu-per-satu** untuk paham arsitektur.
-   - **Wajib baca [graphify-out/GRAPH_REPORT.md](graphify-out/GRAPH_REPORT.md)** untuk ringkasan visual, _God Nodes_, batas _Communities_, _Surprising Connections_.
-   - Jika tanya aliran data / relasi modul, pakai `graphify query "<pertanyaan>"` atau kueri `graphify-out/graph.json`.
+1. **Architecture Understanding (Graphify Knowledge Base)**:
+   - **Do not scan folders / grep manually one-by-one**.
+   - **Must read [graphify-out/GRAPH_REPORT.md](graphify-out/GRAPH_REPORT.md)** for visual summary, God Nodes, Community boundaries, Surprising Connections.
+   - For data flow / module relations, run `graphify query "<question>"` or query `graphify-out/graph.json`.
 
-2. **Aturan Bisnis & Desain Sistem**:
-   - Cek spesifikasi desain & PRD di `docs/PRD.md` dan `docs/design/DESIGN.md` untuk standar komponen, skema warna (Nike Soft Cloud Dark Mode), workflow validasi.
+2. **Business & System Design Rules**:
+   - Check design spec & PRD in `docs/PRD.md` and `docs/design/DESIGN.md` for component standards, color scheme (Nike Soft Cloud Dark Mode), validation workflows.
 
 ---
 
-## Alur Kerja Pengembangan (Development Workflow)
+## Development Workflow
 
-1. **Perubahan Kode TS/JS (Logika & Fungsionalitas)**:
-   Wajib verifikasi TypeScript (`npx tsc --noEmit`) + linter (`npm run lint`).
+1. **TS/JS Code Changes (Logic & Functionality)**:
+   Must verify TypeScript (`npx tsc --noEmit`) + linter (`npm run lint`).
 
-2. **Perubahan Khusus Style / Styling Component**:
-   Skip TypeScript check (`npx tsc --noEmit`). Cukup format (`npm run format`) untuk auto-sort class Tailwind.
+2. **Style-Only / Component Styling Changes**:
+   Skip TypeScript check (`npx tsc --noEmit`). Run format (`npm run format`) for Tailwind auto-sort.
