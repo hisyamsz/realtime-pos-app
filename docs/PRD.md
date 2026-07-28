@@ -23,13 +23,13 @@ last_updated: '2026-07-21'
 
 ### 1.2 Product Description
 
-Omni POS adalah aplikasi Point of Sale (POS) berbasis web yang dirancang khusus untuk cafe dan restoran. Sistem memungkinkan proses pemesanan, pembayaran, monitoring dapur, dan pelaporan berjalan secara realtime menggunakan Supabase Realtime.
+Web-based POS app for cafes & restaurants. Realtime order, payment, kitchen monitoring, reporting via Supabase Realtime.
 
-Aplikasi memiliki beberapa role (Administrator, Kasir, Kitchen Staff) sehingga setiap pengguna memperoleh tampilan dashboard yang berbeda sesuai tanggung jawabnya.
+Role dashboards for Admin, Cashier, Kitchen Staff.
 
 ### 1.3 Problem Statement
 
-Target utama aplikasi adalah menggantikan proses pencatatan manual dengan sistem digital yang cepat, akurat, dan realtime.
+Replace manual recording with fast, accurate, realtime digital system.
 
 ---
 
@@ -37,19 +37,19 @@ Target utama aplikasi adalah menggantikan proses pencatatan manual dengan sistem
 
 ### 2.1 Business Goals
 
-- Mempermudah operasional restoran
-- Mempercepat proses transaksi
-- Mengurangi human error
-- Mempermudah monitoring penjualan
-- Mendukung pembayaran online menggunakan Midtrans
+- Simplify restaurant ops
+- Speed up transactions
+- Reduce human error
+- Simplify sales monitoring
+- Online payments via Midtrans
 
 ### 2.2 Technical Goals
 
-- Menggunakan Next.js App Router
-- Menggunakan React Server Component
-- Menggunakan Server Action
-- Menggunakan React 19
-- Menggunakan Realtime Database (Supabase Realtime)
+- Next.js App Router
+- React Server Component
+- Server Action
+- React 19
+- Supabase Realtime Database
 - Clean Architecture
 - Full TypeScript
 - Production Ready
@@ -60,7 +60,7 @@ Target utama aplikasi adalah menggantikan proses pencatatan manual dengan sistem
 
 ### 3.1 Admin
 
-**Deskripsi:** Mengelola seluruh sistem.
+**Deskripsi:** Manage full system.
 
 **Hak Akses:**
 
@@ -73,7 +73,7 @@ Target utama aplikasi adalah menggantikan proses pencatatan manual dengan sistem
 
 ### 3.2 Cashier
 
-**Deskripsi:** Bertugas menerima pembayaran.
+**Deskripsi:** Process payments.
 
 **Hak Akses:**
 
@@ -84,7 +84,7 @@ Target utama aplikasi adalah menggantikan proses pencatatan manual dengan sistem
 
 ### 3.3 Kitchen
 
-**Deskripsi:** Bertugas menyiapkan makanan.
+**Deskripsi:** Prepare food orders.
 
 **Hak Akses:**
 
@@ -126,7 +126,7 @@ Login → Dashboard → Select Role → Role Dashboard
 
 **Features:**
 
-- Statistics Cards:
+- Stat Cards:
   - Today's Revenue
   - Today's Orders
   - Active Tables
@@ -142,10 +142,10 @@ Login → Dashboard → Select Role → Role Dashboard
 
 | Field     | Keterangan                |
 | --------- | ------------------------- |
-| Full Name | Nama lengkap user         |
-| Email     | Email login               |
-| Password  | Password login            |
-| Avatar    | Foto profil               |
+| Full Name | Full name                 |
+| Email     | Login email               |
+| Password  | Login password            |
+| Avatar    | Profile picture           |
 | Role      | Admin / Cashier / Kitchen |
 
 ### 5.4 Menu Management
@@ -154,15 +154,14 @@ Login → Dashboard → Select Role → Role Dashboard
 
 **Fields:**
 
-| Field            | Keterangan                    |
-| ---------------- | ----------------------------- |
-| Image            | Foto menu                     |
-| Menu Name        | Nama menu                     |
-| Category         | Relasi ke Category Management |
-| Price            | Harga menu                    |
-| Stock            | Jumlah stok tersedia          |
-| Description      | Deskripsi menu                |
-| Available Status | Status ketersediaan menu      |
+| Field            | Keterangan             |
+| ---------------- | ---------------------- |
+| Image            | Menu photo             |
+| Menu Name        | Menu name              |
+| Category         | FK Category Management |
+| Price            | Item price             |
+| Description      | Description            |
+| Available Status | Availability status    |
 
 ### 5.5 Category Management
 
@@ -172,7 +171,7 @@ Login → Dashboard → Select Role → Role Dashboard
 
 | Field         | Keterangan    |
 | ------------- | ------------- |
-| Category Name | Nama kategori |
+| Category Name | Category name |
 
 ### 5.6 Table Management
 
@@ -182,8 +181,8 @@ Login → Dashboard → Select Role → Role Dashboard
 
 | Field        | Keterangan                      |
 | ------------ | ------------------------------- |
-| Table Number | Nomor meja                      |
-| Capacity     | Kapasitas kursi                 |
+| Table Number | Table number                    |
+| Capacity     | Seat capacity                   |
 | Status       | Available / Reserved / Occupied |
 
 ### 5.7 Order Management
@@ -194,7 +193,7 @@ Login → Dashboard → Select Role → Role Dashboard
 - Order Detail
 - Cart
 - Quantity
-- Notes (catatan per item)
+- Notes (per item)
 - Discount
 - Tax
 - Service Fee
@@ -288,20 +287,20 @@ Pending → Preparing → Ready → Completed
 
 ### 8.1 Core Tables
 
-| Table                  | Deskripsi                             |
-| ---------------------- | ------------------------------------- |
-| `users`                | Data akun pengguna (Supabase Auth)    |
-| `profiles`             | Profil pengguna (nama, avatar)        |
-| `roles`                | Daftar role (Admin, Cashier, Kitchen) |
-| `categories`           | Kategori menu                         |
-| `menus`                | Data menu makanan/minuman             |
-| `tables`               | Data meja restoran                    |
-| `orders`               | Data pesanan                          |
-| `order_items`          | Detail item per pesanan               |
-| `payments`             | Data pembayaran                       |
-| `payment_transactions` | Log transaksi pembayaran              |
-| `reservations`         | Data reservasi meja                   |
-| `activity_logs`        | Log aktivitas pengguna                |
+| Table                  | Deskripsi                           |
+| ---------------------- | ----------------------------------- |
+| `users`                | Account data (Supabase Auth)        |
+| `profiles`             | User profiles (name, avatar)        |
+| `roles`                | Role list (Admin, Cashier, Kitchen) |
+| `categories`           | Menu categories                     |
+| `menus`                | Data menu makanan/minuman           |
+| `tables`               | Table data                          |
+| `orders`               | Order data                          |
+| `order_items`          | Item details per order              |
+| `payments`             | Payment data                        |
+| `payment_transactions` | Payment transaction log             |
+| `reservations`         | Table reservation data              |
+| `activity_logs`        | Activity logs                       |
 
 ---
 
@@ -334,14 +333,14 @@ src/
 
 **Realtime Events:**
 
-| Event                | Deskripsi                                 |
-| -------------------- | ----------------------------------------- |
-| New Order            | Notifikasi pesanan baru ke Kitchen        |
-| Update Order Status  | Update status pesanan (Preparing → Ready) |
-| Payment Success      | Konfirmasi pembayaran berhasil            |
-| Table Status         | Update status meja secara realtime        |
-| Kitchen Notification | Notifikasi dari dapur ke kasir            |
-| Reservation Update   | Update status reservasi meja              |
+| Event                | Deskripsi                         |
+| -------------------- | --------------------------------- |
+| New Order            | New order notification to Kitchen |
+| Update Order Status  | Status update (Preparing → Ready) |
+| Payment Success      | Payment confirmation              |
+| Table Status         | Realtime table status update      |
+| Kitchen Notification | Kitchen to cashier notification   |
+| Reservation Update   | Reservation status update         |
 
 ---
 
@@ -426,17 +425,17 @@ src/
 
 ## 15. Learning Objectives
 
-Melalui proyek ini, tujuan pembelajaran bukan hanya menghasilkan aplikasi POS, tetapi juga menguasai praktik pengembangan aplikasi modern yang siap digunakan di industri. Setelah proyek selesai, diharapkan mampu:
+Build production-ready POS & master modern web stack:
 
-- Membangun aplikasi full-stack menggunakan Next.js 15 dan React 19
-- Memahami React Server Components, Server Actions, dan App Router
-- Mendesain database PostgreSQL menggunakan Supabase
-- Mengimplementasikan autentikasi dan otorisasi berbasis role
-- Mengelola state lokal dengan Zustand dan server state menggunakan TanStack React Query
-- Menerapkan validasi form menggunakan React Hook Form dan Zod
-- Membangun fitur realtime menggunakan Supabase Realtime
-- Mengintegrasikan payment gateway Midtrans
-- Menerapkan arsitektur aplikasi yang modular dan scalable
-- Melakukan deployment aplikasi ke Vercel dengan praktik produksi yang baik
+- Full-stack Next.js 15 + React 19
+- React Server Components, Server Actions, App Router
+- PostgreSQL schema + Supabase
+- Role-based auth (RBAC)
+- State management: Zustand (local) + TanStack React Query (server)
+- Form validation: React Hook Form + Zod
+- Realtime features via Supabase Realtime
+- Payment gateway via Midtrans
+- Modular, scalable architecture
+- Production deploy to Vercel
 
 ---
