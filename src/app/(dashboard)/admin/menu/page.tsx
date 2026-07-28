@@ -5,6 +5,6 @@ export const metadata: Metadata = {
   title: 'Menu Management | Omni POS',
 };
 
-export default function UserPage() {
+export default function MenuPage() {
   return <MenuManagement />;
 }

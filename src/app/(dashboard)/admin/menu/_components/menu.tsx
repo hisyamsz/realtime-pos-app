@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { Search, Plus, Edit, Trash2, Utensils } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import DataTable from '@/components/common/data-table';
 import DropdownAction from '@/components/common/dropdown-action';
 import { HEADER_TABLE_MENU } from '@/constants/menu-constants';
@@ -17,7 +16,29 @@ import { DEFAULT_PAGE } from '@/constants/data-table-constants';
 import useDataTable from '@/hooks/use-data-table';
 import { formatRupiah } from '@/lib/utils';
 import { Menu } from '@/types/menu';
-import Image from 'next/image';
+
+function MenuThumbnail({ src, alt }: { src?: string | null; alt: string }) {
+  const [imageError, setImageError] = useState(false);
+
+  if (!src || imageError) {
+    return (
+      <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg border">
+        <Utensils className="text-muted-foreground h-5 w-5" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-muted flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg border">
+      <img
+        src={src}
+        alt={alt}
+        className="h-full w-full object-cover"
+        onError={() => setImageError(true)}
+      />
+    </div>
+  );
+}
 
 export default function MenuManagement() {
   const supabase = createClient();
@@ -35,10 +56,6 @@ export default function MenuManagement() {
     handleChangeLimit,
   } = useDataTable();
 
-  const handleCloseDialog = (open: boolean) => {
-    if (!open) setSelectedAction(null);
-  };
-
   const {
     data: menus,
     isLoading,
@@ -50,9 +67,10 @@ export default function MenuManagement() {
     queryFn: async () => {
       let query = supabase.from('menus').select('*', { count: 'exact' });
 
-      if (currentSearch) {
+      const sanitizedSearch = currentSearch.replace(/[,()]/g, '').trim();
+      if (sanitizedSearch) {
         query = query.or(
-          `name.ilike.%${currentSearch}%,category.ilike.%${currentSearch}%`,
+          `name.ilike.%${sanitizedSearch}%,category.ilike.%${sanitizedSearch}%`,
         );
       }
 
@@ -78,22 +96,11 @@ export default function MenuManagement() {
     return (menus?.items || []).map((menu, index) => {
       return [
         (page - 1) * limit + index + 1,
-        <div
+        <MenuThumbnail
           key={`img-${menu.id}`}
-          className="bg-muted flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg border"
-        >
-          {menu.image_url ? (
-            <Image
-              src={menu.image_url}
-              alt={menu.name}
-              className="h-full w-full object-cover"
-              width={40}
-              height={40}
-            />
-          ) : (
-            <Utensils className="text-muted-foreground h-5 w-5" />
-          )}
-        </div>,
+          src={menu.image_url}
+          alt={menu.name}
+        />,
         <div key={`name-${menu.id}`} className="flex flex-col">
           <span className="text-foreground font-medium">{menu.name}</span>
           {menu.description && (
@@ -166,44 +173,15 @@ export default function MenuManagement() {
           />
         </div>
 
-        <Dialog
-          open={selectedAction?.type === 'create'}
-          onOpenChange={handleCloseDialog}
+        <Button
+          variant="outline"
+          size="xl"
+          className="group w-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 sm:w-auto"
+          onClick={() => setSelectedAction({ type: 'create' })}
         >
-          <DialogTrigger asChild>
-            <Button
-              variant="outline"
-              size="xl"
-              className="group w-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 sm:w-auto"
-              onClick={() => setSelectedAction({ type: 'create' })}
-            >
-              <Plus className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-              Create Menu
-            </Button>
-          </DialogTrigger>
-          {/* <DialogCreateMenu
-            refetch={refetch}
-            onClose={() => handleCloseDialog(false)}
-          /> */}
-        </Dialog>
-
-        {/* <DialogUpdateMenu
-          open={selectedAction?.type === 'update'}
-          handleChangeAction={handleCloseDialog}
-          currentData={
-            selectedAction?.type === 'update' ? selectedAction.data : null
-          }
-          refetch={refetch}
-        />
-
-        <DialogDeleteMenu
-          open={selectedAction?.type === 'delete'}
-          handleChangeAction={handleCloseDialog}
-          currentData={
-            selectedAction?.type === 'delete' ? selectedAction.data : null
-          }
-          refetch={refetch}
-        /> */}
+          <Plus className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+          Create Menu
+        </Button>
       </div>
 
       <DataTable
