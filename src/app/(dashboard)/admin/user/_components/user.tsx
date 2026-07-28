@@ -18,7 +18,7 @@ import DropdownAction from '@/components/common/dropdown-action';
 import { HEADER_TABLE_USER } from '@/constants/user-constants';
 import { DEFAULT_PAGE } from '@/constants/data-table-constants';
 import useDataTable from '@/hooks/use-data-table';
-import { checkIsSelf, useCurrentUserId } from '@/hooks/use-is-self';
+import { useCurrentUserId } from '@/hooks/use-is-self';
 import { Profile } from '@/types/auth';
 
 export default function UserManagement() {
@@ -77,7 +77,9 @@ export default function UserManagement() {
 
   const filteredData = useMemo(() => {
     return (users?.profiles || []).map((user, index) => {
-      const isSelf = checkIsSelf(currentUserId, user.id);
+      const isSelf = Boolean(
+        currentUserId && user.id && currentUserId === user.id,
+      );
 
       return [
         (page - 1) * limit + index + 1,

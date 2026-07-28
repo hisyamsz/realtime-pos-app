@@ -10,12 +10,3 @@ export function useIsSelf(targetUserId?: string | null): boolean {
     currentUserId && targetUserId && targetUserId === currentUserId,
   );
 }
-
-export function checkIsSelf(
-  currentUserId?: string | null,
-  targetUserId?: string | null,
-): boolean {
-  return Boolean(
-    currentUserId && targetUserId && targetUserId === currentUserId,
-  );
-}
