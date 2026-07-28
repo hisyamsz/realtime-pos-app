@@ -26,7 +26,13 @@ Based on the codebase knowledge graph (`graphify-out/GRAPH_REPORT.md`):
 6. **Design System & Styling**:
    - Soft Cloud Dark Mode tokens, Nike design system core foundations, PostCSS & Tailwind configuration.
 
+## Domain Model & Glossary
+
+### Core Entities
+- **Menu Item (`menus`)**: Items offered in the POS system (food/beverages). Key attributes: `name`, `description`, `price`, `discount`, `image_url`, `category` (text category), and `is_available` status.
+
 ## Agent Guidelines
 - Always refer to `CONTEXT.md` for overall architecture context when adding new features or components.
 - Check `docs/adr/` before introducing breaking architectural or pattern changes.
 - Track feature tasks and tickets using local markdown files in `.scratch/<feature>/`.
+
