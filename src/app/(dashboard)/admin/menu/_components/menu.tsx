@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -16,29 +17,6 @@ import { DEFAULT_PAGE } from '@/constants/data-table-constants';
 import useDataTable from '@/hooks/use-data-table';
 import { formatRupiah } from '@/lib/utils';
 import { Menu } from '@/types/menu';
-
-function MenuThumbnail({ src, alt }: { src?: string | null; alt: string }) {
-  const [imageError, setImageError] = useState(false);
-
-  if (!src || imageError) {
-    return (
-      <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg border">
-        <Utensils className="text-muted-foreground h-5 w-5" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="bg-muted flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg border">
-      <img
-        src={src}
-        alt={alt}
-        className="h-full w-full object-cover"
-        onError={() => setImageError(true)}
-      />
-    </div>
-  );
-}
 
 export default function MenuManagement() {
   const supabase = createClient();
@@ -96,11 +74,27 @@ export default function MenuManagement() {
     return (menus?.items || []).map((menu, index) => {
       return [
         (page - 1) * limit + index + 1,
-        <MenuThumbnail
-          key={`img-${menu.id}`}
-          src={menu.image_url}
-          alt={menu.name}
-        />,
+        menu.image_url ? (
+          <div
+            key={`img-${menu.id}`}
+            className="bg-muted relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg border"
+          >
+            <Image
+              src={menu.image_url}
+              alt={menu.name}
+              width={40}
+              height={40}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ) : (
+          <div
+            key={`img-fallback-${menu.id}`}
+            className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg border"
+          >
+            <Utensils className="text-muted-foreground h-5 w-5" />
+          </div>
+        ),
         <div key={`name-${menu.id}`} className="flex flex-col">
           <span className="text-foreground font-medium">{menu.name}</span>
           {menu.description && (
