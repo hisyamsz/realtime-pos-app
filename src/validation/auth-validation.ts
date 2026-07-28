@@ -13,8 +13,6 @@ export const loginSchema = z.object({
     .max(100, 'Password must be at most 100 characters'),
 });
 
-
-
 const nameSchema = z
   .string()
   .trim()
@@ -42,10 +40,13 @@ export const createUserSchema = z.object({
     .union([
       z
         .instanceof(File)
-        .refine((file) => file.size <= MAX_FILE_SIZE, 'File size must be 2MB or less')
+        .refine(
+          (file) => file.size <= MAX_FILE_SIZE,
+          'File size must be 2MB or less',
+        )
         .refine(
           (file) => ALLOWED_IMAGE_TYPES.includes(file.type),
-          'Only JPEG, PNG, WEBP, and GIF images are allowed'
+          'Only JPEG, PNG, WEBP, and GIF images are allowed',
         ),
       z.string(),
     ])
@@ -61,10 +62,13 @@ export const updateUserSchema = z.object({
     .union([
       z
         .instanceof(File)
-        .refine((file) => file.size <= MAX_FILE_SIZE, 'File size must be 2MB or less')
+        .refine(
+          (file) => file.size <= MAX_FILE_SIZE,
+          'File size must be 2MB or less',
+        )
         .refine(
           (file) => ALLOWED_IMAGE_TYPES.includes(file.type),
-          'Only JPEG, PNG, WEBP, and GIF images are allowed'
+          'Only JPEG, PNG, WEBP, and GIF images are allowed',
         ),
       z.string(),
     ])

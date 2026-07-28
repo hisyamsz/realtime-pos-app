@@ -1,7 +1,10 @@
 import { clsx, type ClassValue } from 'clsx';
 import { ChangeEvent } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { MAX_FILE_SIZE_MB, ALLOWED_IMAGE_TYPES } from '@/constants/file-constants';
+import {
+  MAX_FILE_SIZE_MB,
+  ALLOWED_IMAGE_TYPES,
+} from '@/constants/file-constants';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -20,7 +23,7 @@ export function getImageData(event: ChangeEvent<HTMLInputElement>) {
 export function validateImageFile(
   file: File,
   maxSizeMB: number = MAX_FILE_SIZE_MB,
-  allowedTypes: string[] = ALLOWED_IMAGE_TYPES
+  allowedTypes: string[] = ALLOWED_IMAGE_TYPES,
 ): string | null {
   const maxSizeBytes = maxSizeMB * 1024 * 1024;
   if (file.size > maxSizeBytes) {
@@ -30,4 +33,15 @@ export function validateImageFile(
     return `Invalid file type. Allowed: ${allowedTypes.map((t) => t.split('/')[1]).join(', ')}.`;
   }
   return null;
+}
+
+/**
+ * Formats a number to Indonesian Rupiah currency format.
+ */
+export function formatRupiah(amount: number): string {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+  }).format(amount);
 }

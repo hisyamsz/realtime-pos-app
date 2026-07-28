@@ -23,7 +23,9 @@ export async function uploadFile(
     return {
       status: 'error',
       errors: {
-        _form: ['Invalid file type. Only JPEG, PNG, WEBP, and GIF images are allowed.'],
+        _form: [
+          'Invalid file type. Only JPEG, PNG, WEBP, and GIF images are allowed.',
+        ],
       },
     };
   }

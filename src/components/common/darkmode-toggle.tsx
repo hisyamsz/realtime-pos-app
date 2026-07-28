@@ -20,11 +20,11 @@ export function DarkmodeToggle() {
         <Button
           variant="outline"
           size="icon"
-          className="group relative h-10 w-10 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:bg-accent data-[state=open]:-translate-y-0.5 data-[state=open]:shadow-md data-[state=open]:bg-accent active:translate-y-0 active:scale-95"
+          className="group hover:bg-accent data-[state=open]:bg-accent relative h-10 w-10 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 data-[state=open]:-translate-y-0.5 data-[state=open]:shadow-md"
         >
           <div className="relative flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-data-[state=open]:scale-110">
-            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all duration-300 dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all duration-300 dark:rotate-0 dark:scale-100" />
+            <Sun className="h-5 w-5 scale-100 rotate-0 transition-all duration-300 dark:scale-0 dark:-rotate-90" />
+            <Moon className="absolute h-5 w-5 scale-0 rotate-90 transition-all duration-300 dark:scale-100 dark:rotate-0" />
           </div>
           <span className="sr-only">Toggle theme</span>
         </Button>
@@ -61,6 +61,3 @@ export function DarkmodeToggle() {
     </DropdownMenu>
   );
 }
-
-
-

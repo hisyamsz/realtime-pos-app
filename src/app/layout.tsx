@@ -33,9 +33,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} antialiased`}>
         <AuthStoreProvider initialProfile={initialProfile}>
           <ReactQueryProvider>
             <ThemeProvider

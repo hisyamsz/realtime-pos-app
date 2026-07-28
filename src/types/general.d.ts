@@ -22,4 +22,3 @@ declare global {
     message?: string;
   }
 }
-
