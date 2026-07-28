@@ -1,25 +1,25 @@
 # Workspace Rules
 
-Selalu patuhi aturan proyek yang ditentukan di bawah ini setiap kali melakukan tugas dalam proyek ini:
+Mandatory project rules per task:
 
-## Inisialisasi Sesi Baru (New Session Context)
+## New Session Context
 
-Saat sesi baru pertama kali dibuka/dibuat, agen AI wajib menjalankan langkah-langkah konteks awal berikut secara efisien:
+On session start, agent run initial steps:
 
-1. **Pemahaman Arsitektur (Graphify Knowledge Base)**:
-   - **Jangan melakukan scan folder atau grep manual satu-per-satu** hanya untuk memahami arsitektur atau keterkaitan kode.
-   - **Wajib langsung membaca [graphify-out/GRAPH_REPORT.md](graphify-out/GRAPH_REPORT.md)** untuk melihat ringkasan visual, *God Nodes*, batas *Communities*, dan *Surprising Connections*.
-   - Jika pengguna mengajukan pertanyaan umum tentang aliran data atau keterhubungan modul, manfaatkan `graphify query "<pertanyaan>"` atau kueri langsung ke `graphify-out/graph.json`.
+1. **Architecture Understanding (Graphify Knowledge Base)**:
+   - **Do not scan folders / grep manually one-by-one**.
+   - **Must read [graphify-out/GRAPH_REPORT.md](graphify-out/GRAPH_REPORT.md)** for visual summary, God Nodes, Community boundaries, Surprising Connections.
+   - For data flow / module relations, run `graphify query "<question>"` or query `graphify-out/graph.json`.
 
-2. **Aturan Bisnis & Desain Sistem**:
-   - Periksa spesifikasi desain & PRD di `docs/PRD.md`, `docs/design/DESIGN.md`, dan `docs/rules.md` untuk memahami standar komponen, skema warna (Nike Soft Cloud Dark Mode), serta workflow validasi.
+2. **Business & System Design Rules**:
+   - Check design spec & PRD in `docs/PRD.md` and `docs/design/DESIGN.md` for component standards, color scheme (Nike Soft Cloud Dark Mode), validation workflows.
 
 ---
 
-## Alur Kerja Pengembangan (Development Workflow)
+## Development Workflow
 
-1. **Perubahan Kode TS/JS (Logika & Fungsionalitas)**:
-   Wajib jalankan verifikasi TypeScript (`npx tsc --noEmit`) dan linter (`npm run lint`) untuk memastikan tidak ada kesalahan tipe atau standar kode.
+1. **TS/JS Code Changes (Logic & Functionality)**:
+   Must verify TypeScript (`npx tsc --noEmit`) + linter (`npm run lint`).
 
-2. **Perubahan Khusus Style / Styling Component**:
-   Tidak perlu menjalankan verifikasi TypeScript (`npx tsc --noEmit`). Cukup jalankan format (`npm run format`) agar pengurutan class Tailwind (*Tailwind class sorting*) berjalan secara otomatis.
+2. **Style-Only / Component Styling Changes**:
+   Skip TypeScript check (`npx tsc --noEmit`). Run format (`npm run format`) for Tailwind auto-sort.
