@@ -23,7 +23,6 @@ export default function useDataTable() {
   const handleChangeSearch = (search: string) => {
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
-      console.log('[Debounce Search Triggered]:', search);
       setCurrentSearch(search);
       setCurrentPage(DEFAULT_PAGE);
     }, DEFAULT_DELAY);

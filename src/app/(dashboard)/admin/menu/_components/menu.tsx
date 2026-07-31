@@ -71,7 +71,7 @@ export default function MenuManagement() {
   }, [menus, limit]);
 
   const filteredData = useMemo(() => {
-    return (menus?.items || []).map((menu, index) => {
+    return (menus?.items || []).map((menu: Menu, index: number) => {
       return [
         (page - 1) * limit + index + 1,
         typeof menu.image_url === 'string' && menu.image_url ? (
@@ -110,15 +110,34 @@ export default function MenuManagement() {
         >
           {menu.category}
         </Badge>,
-        <span key={`price-${menu.id}`} className="font-medium">
-          {formatRupiah(menu.price)}
-        </span>,
-        <span key={`discount-${menu.id}`} className="text-muted-foreground">
-          {menu.discount ? `${menu.discount}%` : '-'}
-        </span>,
+        <div
+          key={`price-${menu.id}`}
+          className="space-y-0.5 text-xs md:text-sm"
+        >
+          <p className="text-muted-foreground">
+            Base:{' '}
+            <span className="text-foreground font-medium">
+              {formatRupiah(menu.price)}
+            </span>
+          </p>
+          <p className="text-muted-foreground">
+            Discount:{' '}
+            <span className="text-foreground font-medium">
+              {menu.discount ? `${menu.discount}%` : '-'}
+            </span>
+          </p>
+          <p className="text-muted-foreground">
+            After Discount:{' '}
+            <span className="text-foreground font-medium">
+              {menu.discount
+                ? formatRupiah(menu.price - (menu.price * menu.discount) / 100)
+                : '-'}
+            </span>
+          </p>
+        </div>,
         <Badge
           key={`status-${menu.id}`}
-          variant={menu.is_available ? 'default' : 'destructive'}
+          variant={menu.is_available ? 'success' : 'destructive'}
         >
           {menu.is_available ? 'Available' : 'Unavailable'}
         </Badge>,

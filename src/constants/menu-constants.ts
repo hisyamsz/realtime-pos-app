@@ -4,7 +4,6 @@ export const HEADER_TABLE_MENU = [
   'Name',
   'Category',
   'Price',
-  'Discount',
   'Status',
   'Action',
 ];

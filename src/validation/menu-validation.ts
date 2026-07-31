@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import z from 'zod';
 
 export const menuSchema = z.object({
   name: z
@@ -20,4 +20,3 @@ export const menuSchema = z.object({
 });
 
 export type Menu = z.infer<typeof menuSchema> & { id: number | string };
-
