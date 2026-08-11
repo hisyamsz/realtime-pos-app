@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Search, Plus, Edit, Trash2, Utensils } from 'lucide-react';
 import { toast } from 'sonner';
 
+import DialogCreateMenu from './dialog-create-menu';
 import DataTable from '@/components/common/data-table';
 import DropdownAction from '@/components/common/dropdown-action';
 import { HEADER_TABLE_MENU } from '@/constants/menu-constants';
@@ -33,6 +34,10 @@ export default function MenuManagement() {
     handleChangePage,
     handleChangeLimit,
   } = useDataTable();
+
+  const handleCloseDialog = (open: boolean) => {
+    if (!open) setSelectedAction(null);
+  };
 
   const {
     data: menus,
@@ -214,6 +219,12 @@ export default function MenuManagement() {
           onPageChange: handleChangePage,
           onLimitChange: handleChangeLimit,
         }}
+      />
+
+      <DialogCreateMenu
+        open={selectedAction?.type === 'create'}
+        handleChangeAction={handleCloseDialog}
+        refetch={refetch}
       />
     </div>
   );
