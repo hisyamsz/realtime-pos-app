@@ -1,5 +1,5 @@
 import { MenuFormState } from '@/types/menu';
-import { createMenuSchema, CreateMenuForm } from '@/validation/menu-validation';
+import { CreateMenuForm } from '@/validation/menu-validation';
 
 export const HEADER_TABLE_MENU = [
   'No',
@@ -33,9 +33,10 @@ export const INITIAL_CREATE_MENU_FORM: CreateMenuForm = {
   is_available: true,
 };
 
-export const INITIAL_STATE_CREATE_MENU: MenuFormState = {
+export const INITIAL_STATE_MENU: MenuFormState = {
   status: 'idle',
-  errors: Object.fromEntries(
-    [...Object.keys(createMenuSchema.shape), '_form'].map((k) => [k, []]),
-  ),
+  errors: {},
 };
+
+export const INITIAL_STATE_CREATE_MENU: MenuFormState = INITIAL_STATE_MENU;
+export const INITIAL_STATE_UPDATE_MENU: MenuFormState = INITIAL_STATE_MENU;

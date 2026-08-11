@@ -11,6 +11,7 @@ import { Search, Plus, Edit, Trash2, Utensils } from 'lucide-react';
 import { toast } from 'sonner';
 
 import DialogCreateMenu from './dialog-create-menu';
+import DialogUpdateMenu from './dialog-update-menu';
 import DataTable from '@/components/common/data-table';
 import DropdownAction from '@/components/common/dropdown-action';
 import { HEADER_TABLE_MENU } from '@/constants/menu-constants';
@@ -223,6 +224,12 @@ export default function MenuManagement() {
 
       <DialogCreateMenu
         open={selectedAction?.type === 'create'}
+        handleChangeAction={handleCloseDialog}
+        refetch={refetch}
+      />
+      <DialogUpdateMenu
+        open={selectedAction?.type === 'update'}
+        currentData={selectedAction?.data}
         handleChangeAction={handleCloseDialog}
         refetch={refetch}
       />

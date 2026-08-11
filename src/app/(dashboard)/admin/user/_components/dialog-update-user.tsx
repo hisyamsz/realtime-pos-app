@@ -1,6 +1,6 @@
 'use client';
 
-import { startTransition, useActionState, useEffect, useMemo } from 'react';
+import { startTransition, useActionState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -9,10 +9,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { FormUser } from './form-user';
 
 import { updateUserSchema, UpdateUserForm } from '@/validation/auth-validation';
-import {
-  INITIAL_STATE_UPDATE_USER,
-  HAS_LETTER_OR_NUMBER_REGEX,
-} from '@/constants/auth-constants';
+import { INITIAL_STATE_UPDATE_USER } from '@/constants/auth-constants';
 import { updateUser } from '../action';
 import { Profile } from '@/types/auth';
 import { useIsSelf } from '@/hooks/use-is-self';
@@ -39,44 +36,9 @@ export default function DialogUpdateUser({
   const [updateUserState, updateUserAction, isPendingUpdateUser] =
     useActionState(updateUser, INITIAL_STATE_UPDATE_USER);
 
-  const watchedName = form.watch('name');
-  const watchedRole = form.watch('role');
-  const watchedAvatarUrl = form.watch('avatar_url');
-
-  const isChanged = useMemo(() => {
-    if (!currentData || !open) return false;
-
-    const trimmedWatchedName = (watchedName ?? '').trim();
-    const isNameValid =
-      trimmedWatchedName.length > 0 &&
-      HAS_LETTER_OR_NUMBER_REGEX.test(trimmedWatchedName);
-
-    if (!isNameValid) return false;
-
-    const isNameChanged =
-      trimmedWatchedName !== (currentData.name ?? '').trim();
-    const isRoleChanged = watchedRole !== currentData.role;
-
-    let isAvatarChanged = false;
-    if (watchedAvatarUrl instanceof File) {
-      isAvatarChanged = true;
-    } else {
-      const currentAvatar = currentData.avatar_url || null;
-      const formAvatar = watchedAvatarUrl || null;
-      isAvatarChanged = formAvatar !== currentAvatar;
-    }
-
-    return isNameChanged || isRoleChanged || isAvatarChanged;
-  }, [currentData, open, watchedName, watchedRole, watchedAvatarUrl]);
+  const { isDirty } = form.formState;
 
   const onSubmit = form.handleSubmit((data) => {
-    if (!isChanged) {
-      toast.info('No changes detected', {
-        description: 'Please modify at least one field before updating.',
-      });
-      return;
-    }
-
     if (isSelf && data.role !== 'admin') {
       toast.error('Update User Failed', {
         description: 'Admins cannot change their own role',
@@ -116,7 +78,7 @@ export default function DialogUpdateUser({
       handleChangeAction?.(false);
       refetch?.();
     }
-  }, [updateUserState]);
+  }, [updateUserState, form, handleChangeAction, refetch]);
 
   useEffect(() => {
     if (currentData && open) {
@@ -140,7 +102,7 @@ export default function DialogUpdateUser({
         submitLabel="Update user"
         type="update"
         isRoleDisabled={isSelf}
-        isSubmitDisabled={!isChanged}
+        isSubmitDisabled={!isDirty}
       />
     </Dialog>
   );
