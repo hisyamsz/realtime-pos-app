@@ -65,13 +65,13 @@ export default function DialogDeleteUser({
       onOpenChange={handleChangeAction}
       title="User"
       description={
-        <span className="text-muted-foreground text-sm leading-normal">
+        <>
           Are you sure you want to delete user{' '}
           <strong className="text-foreground font-medium">
             &quot;{currentData?.name || 'Unknown Name'}&quot;
           </strong>
           ? This action cannot be undone.
-        </span>
+        </>
       }
       onConfirm={handleConfirm}
       isPending={isPendingDeleteUser}

@@ -1,9 +1,12 @@
 'use server';
 
-import { uploadFile } from '@/actions/storage-action';
+import { deleteFile, uploadFile } from '@/actions/storage-action';
 import { createClient } from '@/lib/supabase/server';
 import { MenuFormState } from '@/types/menu';
-import { createMenuSchema, updateMenuSchema } from '@/validation/menu-validation';
+import {
+  createMenuSchema,
+  updateMenuSchema,
+} from '@/validation/menu-validation';
 
 async function verifyAdminAuth(actionName: string) {
   const supabase = await createClient({});
@@ -52,9 +55,7 @@ export async function createMenu(
     category: formData.get('category'),
     price: rawPrice !== null && rawPrice !== '' ? Number(rawPrice) : undefined,
     discount:
-      rawDiscount !== null && rawDiscount !== ''
-        ? Number(rawDiscount)
-        : 0,
+      rawDiscount !== null && rawDiscount !== '' ? Number(rawDiscount) : 0,
     image_url:
       imageFile instanceof File && imageFile.size > 0 ? imageFile : undefined,
     is_available: isAvailable,
@@ -143,13 +144,14 @@ export async function updateMenu(
     description: formData.get('description'),
     category: formData.get('category'),
     price: rawPrice !== null && rawPrice !== '' ? Number(rawPrice) : undefined,
-    discount: rawDiscount !== null && rawDiscount !== '' ? Number(rawDiscount) : 0,
+    discount:
+      rawDiscount !== null && rawDiscount !== '' ? Number(rawDiscount) : 0,
     image_url:
       rawImage instanceof File && rawImage.size > 0
         ? rawImage
         : typeof rawImage === 'string' && rawImage !== ''
-        ? rawImage
-        : undefined,
+          ? rawImage
+          : undefined,
     is_available: isAvailableRaw !== null ? isAvailableRaw === 'true' : true,
   });
 
@@ -178,9 +180,7 @@ export async function updateMenu(
 
   if (validatedFields.data.image_url instanceof File) {
     const oldImageUrl = formData.get('old_image_url') as string | null;
-    const prevPath = oldImageUrl
-      ? oldImageUrl.split('/images/')[1]
-      : undefined;
+    const prevPath = oldImageUrl ? oldImageUrl.split('/images/')[1] : undefined;
 
     const { errors, data } = await uploadFile(
       'images',
@@ -202,15 +202,8 @@ export async function updateMenu(
   }
 
   const supabase = await createClient({});
-  const {
-    id,
-    name,
-    description,
-    category,
-    price,
-    discount,
-    is_available,
-  } = validatedFields.data;
+  const { id, name, description, category, price, discount, is_available } =
+    validatedFields.data;
 
   const { error } = await supabase
     .from('menus')
@@ -243,3 +236,44 @@ export async function updateMenu(
   };
 }
 
+export async function deleteMenu(
+  _prevState: BaseFormState,
+  formData: FormData,
+): Promise<BaseFormState> {
+  const id = formData.get('id') as string;
+  if (!id)
+    return { status: 'error', errors: { _form: ['Menu ID is required'] } };
+
+  const auth = await verifyAdminAuth('delete menus');
+  if (!auth.isAuthorized) {
+    return { status: 'error', errors: { _form: [auth.error!] } };
+  }
+
+  const supabase = await createClient({});
+
+  const { data: menu } = await supabase
+    .from('menus')
+    .select('image_url')
+    .eq('id', id)
+    .single();
+
+  if (menu?.image_url) {
+    const prevPath = menu.image_url.split('/images/')[1];
+    if (prevPath) {
+      const fileDeleteResult = await deleteFile('images', prevPath);
+      const fileError = fileDeleteResult.errors?._form?.[0];
+      if (fileError && !/not found|404/i.test(fileError)) {
+        return { status: 'error', errors: { _form: [fileError] } };
+      }
+    }
+  }
+
+  const { error } = await supabase.from('menus').delete().eq('id', id);
+  if (error) return { status: 'error', errors: { _form: [error.message] } };
+
+  return {
+    status: 'success',
+    errors: {},
+    message: 'Menu deleted successfully',
+  };
+}

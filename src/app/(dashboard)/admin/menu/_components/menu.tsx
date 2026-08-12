@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 
 import DialogCreateMenu from './dialog-create-menu';
 import DialogUpdateMenu from './dialog-update-menu';
+import DialogDeleteMenu from './dialog-delete-menu';
 import DataTable from '@/components/common/data-table';
 import DropdownAction from '@/components/common/dropdown-action';
 import { HEADER_TABLE_MENU } from '@/constants/menu-constants';
@@ -229,6 +230,12 @@ export default function MenuManagement() {
       />
       <DialogUpdateMenu
         open={selectedAction?.type === 'update'}
+        currentData={selectedAction?.data}
+        handleChangeAction={handleCloseDialog}
+        refetch={refetch}
+      />
+      <DialogDeleteMenu
+        open={selectedAction?.type === 'delete'}
         currentData={selectedAction?.data}
         handleChangeAction={handleCloseDialog}
         refetch={refetch}
