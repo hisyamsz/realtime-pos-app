@@ -78,9 +78,10 @@ export default function DialogUpdateUser({
           updateUserState.errors?._form?.[0] || 'Unknown error occurred',
       });
       if (updateUserState.errors) {
-        Object.entries(updateUserState.errors).forEach(([field, errors]) => {
-          if (field !== '_form' && errors?.[0]) {
-            form.setError(field as any, { message: errors[0] });
+        Object.entries(updateUserState.errors).forEach(([field, errList]) => {
+          const firstErr = Array.isArray(errList) ? errList[0] : undefined;
+          if (field !== '_form' && firstErr) {
+            form.setError(field as any, { message: firstErr });
           }
         });
       }

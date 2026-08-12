@@ -42,4 +42,3 @@ To prevent premature code writing during design sessions:
 3. **Phase 3: Implementation (`/implement`)**:
    - **Role**: Software Developer / Coder.
    - **Constraint**: Writing/editing source code is ONLY permitted after spec and tickets are finalized, or when explicitly instructed to implement code (`/implement` or TDD workflow).
-

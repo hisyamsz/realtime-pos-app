@@ -13,7 +13,7 @@ import {
   UpdateMenuForm,
   Menu,
 } from '@/validation/menu-validation';
-import { INITIAL_STATE_UPDATE_MENU } from '@/constants/menu-constants';
+import { INITIAL_STATE_MENU } from '@/constants/menu-constants';
 import { updateMenu } from '../action';
 
 interface DialogUpdateMenuProps {
@@ -34,7 +34,7 @@ export default function DialogUpdateMenu({
   });
 
   const [updateMenuState, updateMenuAction, isPendingUpdateMenu] =
-    useActionState(updateMenu, INITIAL_STATE_UPDATE_MENU);
+    useActionState(updateMenu, INITIAL_STATE_MENU);
 
   const handledStateRef = useRef(updateMenuState);
   const { isDirty } = form.formState;

@@ -37,6 +37,3 @@ export const INITIAL_STATE_MENU: MenuFormState = {
   status: 'idle',
   errors: {},
 };
-
-export const INITIAL_STATE_CREATE_MENU: MenuFormState = INITIAL_STATE_MENU;
-export const INITIAL_STATE_UPDATE_MENU: MenuFormState = INITIAL_STATE_MENU;

@@ -11,7 +11,7 @@ import { FormMenu } from './form-menu';
 import { createMenuSchema, CreateMenuForm } from '@/validation/menu-validation';
 import {
   INITIAL_CREATE_MENU_FORM,
-  INITIAL_STATE_CREATE_MENU,
+  INITIAL_STATE_MENU,
 } from '@/constants/menu-constants';
 import { createMenu } from '../action';
 
@@ -32,7 +32,7 @@ export default function DialogCreateMenu({
   });
 
   const [createMenuState, createMenuAction, isPendingCreateMenu] =
-    useActionState(createMenu, INITIAL_STATE_CREATE_MENU);
+    useActionState(createMenu, INITIAL_STATE_MENU);
 
   const handledStateRef = useRef(createMenuState);
 

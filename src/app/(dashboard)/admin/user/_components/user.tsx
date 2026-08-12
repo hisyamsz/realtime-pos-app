@@ -14,11 +14,12 @@ import DialogUpdateUser from './dialog-update-user';
 import DialogDeleteUser from './dialog-delete-user';
 import DataTable from '@/components/common/data-table';
 import DropdownAction from '@/components/common/dropdown-action';
-import { HEADER_TABLE_USER } from '@/constants/user-constants';
 import { DEFAULT_PAGE } from '@/constants/data-table-constants';
 import useDataTable from '@/hooks/use-data-table';
 import { useCurrentUserId } from '@/hooks/use-is-self';
 import { Profile } from '@/types/auth';
+
+const HEADER_TABLE_USER = ['No', 'ID', 'Name', 'Role', 'Action'];
 
 export default function UserManagement() {
   const supabase = createClient();

@@ -60,9 +60,10 @@ export default function DialogCreateUser({
         description: createUserState.errors?._form?.[0],
       });
       if (createUserState.errors) {
-        Object.entries(createUserState.errors).forEach(([field, errors]) => {
-          if (field !== '_form' && errors?.[0]) {
-            form.setError(field as any, { message: errors[0] });
+        Object.entries(createUserState.errors).forEach(([field, errList]) => {
+          const firstErr = Array.isArray(errList) ? errList[0] : undefined;
+          if (field !== '_form' && firstErr) {
+            form.setError(field as any, { message: firstErr });
           }
         });
       }
