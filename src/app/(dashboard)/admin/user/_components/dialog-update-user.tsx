@@ -1,6 +1,6 @@
 'use client';
 
-import { startTransition, useActionState, useEffect } from 'react';
+import { startTransition, useActionState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -36,6 +36,7 @@ export default function DialogUpdateUser({
   const [updateUserState, updateUserAction, isPendingUpdateUser] =
     useActionState(updateUser, INITIAL_STATE_UPDATE_USER);
 
+  const handledStateRef = useRef(updateUserState);
   const { isDirty } = form.formState;
 
   const onSubmit = form.handleSubmit((data) => {
@@ -66,13 +67,26 @@ export default function DialogUpdateUser({
   });
 
   useEffect(() => {
-    if (updateUserState?.status === 'error') {
+    if (!updateUserState || handledStateRef.current === updateUserState) {
+      return;
+    }
+    handledStateRef.current = updateUserState;
+
+    if (updateUserState.status === 'error') {
       toast.error('Update User Failed', {
-        description: updateUserState.errors?._form?.[0],
+        description:
+          updateUserState.errors?._form?.[0] || 'Unknown error occurred',
       });
+      if (updateUserState.errors) {
+        Object.entries(updateUserState.errors).forEach(([field, errors]) => {
+          if (field !== '_form' && errors?.[0]) {
+            form.setError(field as any, { message: errors[0] });
+          }
+        });
+      }
     }
 
-    if (updateUserState?.status === 'success') {
+    if (updateUserState.status === 'success') {
       toast.success(updateUserState.message || 'User updated successfully');
       form.reset();
       handleChangeAction?.(false);

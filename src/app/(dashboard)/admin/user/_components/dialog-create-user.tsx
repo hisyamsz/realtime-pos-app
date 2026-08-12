@@ -1,10 +1,11 @@
 'use client';
 
-import { startTransition, useActionState, useEffect } from 'react';
+import { startTransition, useActionState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 
+import { Dialog } from '@/components/ui/dialog';
 import { FormUser } from './form-user';
 
 import { createUserSchema, CreateUserForm } from '@/validation/auth-validation';
@@ -16,12 +17,14 @@ import { createUser } from '../action';
 
 interface DialogCreateUserProps {
   refetch?: () => void;
-  onClose?: () => void;
+  open?: boolean;
+  handleChangeAction?: (open: boolean) => void;
 }
 
 export default function DialogCreateUser({
   refetch,
-  onClose,
+  open,
+  handleChangeAction,
 }: DialogCreateUserProps) {
   const form = useForm<CreateUserForm>({
     resolver: zodResolver(createUserSchema),
@@ -30,6 +33,8 @@ export default function DialogCreateUser({
 
   const [createUserState, createUserAction, isPendingCreateUser] =
     useActionState(createUser, INITIAL_STATE_CREATE_USER);
+
+  const handledStateRef = useRef(createUserState);
 
   const onSubmit = form.handleSubmit((data) => {
     const formData = new FormData();
@@ -45,27 +50,47 @@ export default function DialogCreateUser({
   });
 
   useEffect(() => {
-    if (createUserState?.status === 'error') {
+    if (!createUserState || handledStateRef.current === createUserState) {
+      return;
+    }
+    handledStateRef.current = createUserState;
+
+    if (createUserState.status === 'error') {
       toast.error('Create User Failed', {
         description: createUserState.errors?._form?.[0],
       });
+      if (createUserState.errors) {
+        Object.entries(createUserState.errors).forEach(([field, errors]) => {
+          if (field !== '_form' && errors?.[0]) {
+            form.setError(field as any, { message: errors[0] });
+          }
+        });
+      }
     }
 
-    if (createUserState?.status === 'success') {
-      toast.success(createUserState.message || 'Create User Success');
-      form.reset();
-      onClose?.();
+    if (createUserState.status === 'success') {
+      toast.success(createUserState.message || 'User created successfully');
+      form.reset(INITIAL_CREATE_USER_FORM);
+      handleChangeAction?.(false);
       refetch?.();
     }
-  }, [createUserState]);
+  }, [createUserState, form, handleChangeAction, refetch]);
+
+  useEffect(() => {
+    if (!open) {
+      form.reset(INITIAL_CREATE_USER_FORM);
+    }
+  }, [open, form]);
 
   return (
-    <FormUser
-      form={form}
-      onSubmitAction={onSubmit}
-      isPending={isPendingCreateUser}
-      submitLabel="Create user"
-      type="create"
-    />
+    <Dialog open={open} onOpenChange={handleChangeAction}>
+      <FormUser
+        form={form}
+        onSubmitAction={onSubmit}
+        isPending={isPendingCreateUser}
+        submitLabel="Create User"
+        type="create"
+      />
+    </Dialog>
   );
 }

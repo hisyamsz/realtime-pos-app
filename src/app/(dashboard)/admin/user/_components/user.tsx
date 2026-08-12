@@ -9,11 +9,10 @@ import { Badge } from '@/components/ui/badge';
 import { Search, UserPlus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import DataTable from '@/components/common/data-table';
 import DialogCreateUser from './dialog-create-user';
 import DialogUpdateUser from './dialog-update-user';
 import DialogDeleteUser from './dialog-delete-user';
+import DataTable from '@/components/common/data-table';
 import DropdownAction from '@/components/common/dropdown-action';
 import { HEADER_TABLE_USER } from '@/constants/user-constants';
 import { DEFAULT_PAGE } from '@/constants/data-table-constants';
@@ -53,8 +52,11 @@ export default function UserManagement() {
     queryFn: async () => {
       let query = supabase.from('profiles').select('*', { count: 'exact' });
 
-      if (currentSearch) {
-        query = query.ilike('name', `%${currentSearch}%`);
+      const sanitizedSearch = currentSearch.replace(/[,()]/g, '').trim();
+      if (sanitizedSearch) {
+        query = query.or(
+          `name.ilike.%${sanitizedSearch}%,role.ilike.%${sanitizedSearch}%`,
+        );
       }
 
       const { data, error, count } = await query
@@ -67,7 +69,7 @@ export default function UserManagement() {
         });
         throw error;
       }
-      return { profiles: data, count };
+      return { items: (data as Profile[]) || [], count };
     },
   });
 
@@ -76,7 +78,7 @@ export default function UserManagement() {
   }, [users, limit]);
 
   const filteredData = useMemo(() => {
-    return (users?.profiles || []).map((user, index) => {
+    return (users?.items || []).map((user: Profile, index: number) => {
       const isSelf = Boolean(
         currentUserId && user.id && currentUserId === user.id,
       );
@@ -133,7 +135,7 @@ export default function UserManagement() {
         />,
       ];
     });
-  }, [users?.profiles, page, limit, currentUserId]);
+  }, [users?.items, page, limit, currentUserId]);
 
   return (
     <div className="space-y-4">
@@ -142,50 +144,21 @@ export default function UserManagement() {
           <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" />
           <Input
             type="search"
-            placeholder="Search by name.."
+            placeholder="Search by name or role.."
             className="w-full pl-8"
             onChange={(e) => handleChangeSearch(e.target.value)}
           />
         </div>
 
-        <Dialog
-          open={selectedAction?.type === 'create'}
-          onOpenChange={handleCloseDialog}
+        <Button
+          variant="outline"
+          size="xl"
+          className="group w-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 sm:w-auto"
+          onClick={() => setSelectedAction({ type: 'create' })}
         >
-          <DialogTrigger asChild>
-            <Button
-              variant="outline"
-              size="xl"
-              className="group w-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 sm:w-auto"
-              onClick={() => setSelectedAction({ type: 'create' })}
-            >
-              <UserPlus className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-              Create User
-            </Button>
-          </DialogTrigger>
-          <DialogCreateUser
-            refetch={refetch}
-            onClose={() => handleCloseDialog(false)}
-          />
-        </Dialog>
-
-        <DialogUpdateUser
-          open={selectedAction?.type === 'update'}
-          handleChangeAction={handleCloseDialog}
-          currentData={
-            selectedAction?.type === 'update' ? selectedAction.data : null
-          }
-          refetch={refetch}
-        />
-
-        <DialogDeleteUser
-          open={selectedAction?.type === 'delete'}
-          handleChangeAction={handleCloseDialog}
-          currentData={
-            selectedAction?.type === 'delete' ? selectedAction.data : null
-          }
-          refetch={refetch}
-        />
+          <UserPlus className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+          Create User
+        </Button>
       </div>
 
       <DataTable
@@ -205,6 +178,24 @@ export default function UserManagement() {
           onPageChange: handleChangePage,
           onLimitChange: handleChangeLimit,
         }}
+      />
+
+      <DialogCreateUser
+        open={selectedAction?.type === 'create'}
+        handleChangeAction={handleCloseDialog}
+        refetch={refetch}
+      />
+      <DialogUpdateUser
+        open={selectedAction?.type === 'update'}
+        currentData={selectedAction?.data}
+        handleChangeAction={handleCloseDialog}
+        refetch={refetch}
+      />
+      <DialogDeleteUser
+        open={selectedAction?.type === 'delete'}
+        currentData={selectedAction?.data}
+        handleChangeAction={handleCloseDialog}
+        refetch={refetch}
       />
     </div>
   );
