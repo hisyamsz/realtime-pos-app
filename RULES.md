@@ -23,3 +23,23 @@ On session start, agent run initial steps:
 
 2. **Style-Only / Component Styling Changes**:
    Skip TypeScript check (`npx tsc --noEmit`). Run format (`npm run format`) for Tailwind auto-sort.
+
+---
+
+## SDLC Phase Boundaries & Eagerness Bias Prevention
+
+To prevent premature code writing during design sessions:
+
+1. **Phase 1: Brainstorming & Architecture (`/grill-me`)**:
+   - **Role**: System Architect / Tech Lead.
+   - **Constraint**: **NEVER** write or edit application source code files (`src/`, etc.) during `/grill-me` or brainstorming sessions. Focus 100% on asking questions, uncovering edge cases, and resolving design dependencies.
+   - **Output**: Output is strictly conversational Q&A and design summaries.
+
+2. **Phase 2: Specification & Planning (`/to-spec`, `/to-tickets`)**:
+   - **Role**: Technical Planner / Spec Writer.
+   - **Constraint**: Only create or update spec and task tracking files under `.scratch/<feature>/` (e.g. `.scratch/<feature>/spec.md` and `.scratch/<feature>/tasks.md`).
+
+3. **Phase 3: Implementation (`/implement`)**:
+   - **Role**: Software Developer / Coder.
+   - **Constraint**: Writing/editing source code is ONLY permitted after spec and tickets are finalized, or when explicitly instructed to implement code (`/implement` or TDD workflow).
+
