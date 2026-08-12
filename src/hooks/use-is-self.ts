@@ -6,12 +6,7 @@ export function useCurrentUserId(): string | undefined {
 
 export function useIsSelf(targetUserId?: string | null): boolean {
   const currentUserId = useCurrentUserId();
-  return Boolean(currentUserId && targetUserId && targetUserId === currentUserId);
-}
-
-export function checkIsSelf(
-  currentUserId?: string | null,
-  targetUserId?: string | null,
-): boolean {
-  return Boolean(currentUserId && targetUserId && targetUserId === currentUserId);
+  return Boolean(
+    currentUserId && targetUserId && targetUserId === currentUserId,
+  );
 }

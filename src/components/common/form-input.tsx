@@ -50,7 +50,19 @@ export function FormInput<
               {renderInput ? (
                 renderInput(field, fieldState)
               ) : (
-                <Input {...props} {...field} />
+                <Input
+                  {...props}
+                  {...field}
+                  value={field.value ?? ''}
+                  onChange={(e) => {
+                    if (props.type === 'number') {
+                      const val = e.target.value;
+                      field.onChange(val === '' ? '' : Number(val));
+                    } else {
+                      field.onChange(e);
+                    }
+                  }}
+                />
               )}
             </FormControl>
             <FormMessage />

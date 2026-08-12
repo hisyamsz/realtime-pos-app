@@ -1,31 +1,30 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, UserPlus, Edit, Trash2 } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Utensils } from 'lucide-react';
 import { toast } from 'sonner';
 
-import DialogCreateUser from './dialog-create-user';
-import DialogUpdateUser from './dialog-update-user';
-import DialogDeleteUser from './dialog-delete-user';
+import DialogCreateMenu from './dialog-create-menu';
+import DialogUpdateMenu from './dialog-update-menu';
+import DialogDeleteMenu from './dialog-delete-menu';
 import DataTable from '@/components/common/data-table';
 import DropdownAction from '@/components/common/dropdown-action';
+import { HEADER_TABLE_MENU } from '@/constants/menu-constants';
 import { DEFAULT_PAGE } from '@/constants/data-table-constants';
 import useDataTable from '@/hooks/use-data-table';
-import { useCurrentUserId } from '@/hooks/use-is-self';
-import { Profile } from '@/types/auth';
+import { formatRupiah } from '@/lib/utils';
+import { Menu } from '@/validation/menu-validation';
 
-const HEADER_TABLE_USER = ['No', 'ID', 'Name', 'Role', 'Action'];
-
-export default function UserManagement() {
+export default function MenuManagement() {
   const supabase = createClient();
-  const currentUserId = useCurrentUserId();
   const [selectedAction, setSelectedAction] = useState<{
-    data?: Profile | null;
+    data?: Menu | null;
     type: 'create' | 'update' | 'delete';
   } | null>(null);
 
@@ -43,20 +42,20 @@ export default function UserManagement() {
   };
 
   const {
-    data: users,
+    data: menus,
     isLoading,
     isError,
     error: fetchError,
     refetch,
   } = useQuery({
-    queryKey: ['users', page, limit, currentSearch],
+    queryKey: ['menus', page, limit, currentSearch],
     queryFn: async () => {
-      let query = supabase.from('profiles').select('*', { count: 'exact' });
+      let query = supabase.from('menus').select('*', { count: 'exact' });
 
       const sanitizedSearch = currentSearch.replace(/[,()]/g, '').trim();
       if (sanitizedSearch) {
         query = query.or(
-          `name.ilike.%${sanitizedSearch}%,role.ilike.%${sanitizedSearch}%`,
+          `name.ilike.%${sanitizedSearch}%,category.ilike.%${sanitizedSearch}%`,
         );
       }
 
@@ -65,44 +64,92 @@ export default function UserManagement() {
         .range((page - 1) * limit, page * limit - 1);
 
       if (error) {
-        toast.error(`Failed to load users`, {
+        toast.error(`Failed to load menus`, {
           description: error.message,
         });
         throw error;
       }
-      return { items: (data as Profile[]) || [], count };
+      return { items: (data as Menu[]) || [], count };
     },
   });
 
   const totalPages = useMemo(() => {
-    return users && users.count !== null ? Math.ceil(users.count / limit) : 0;
-  }, [users, limit]);
+    return menus && menus.count !== null ? Math.ceil(menus.count / limit) : 0;
+  }, [menus, limit]);
 
   const filteredData = useMemo(() => {
-    return (users?.items || []).map((user: Profile, index: number) => {
-      const isSelf = Boolean(
-        currentUserId && user.id && currentUserId === user.id,
-      );
-
+    return (menus?.items || []).map((menu: Menu, index: number) => {
       return [
         (page - 1) * limit + index + 1,
-        user.id,
-        user.name || 'Unknown Name',
+        typeof menu.image_url === 'string' && menu.image_url ? (
+          <div
+            key={`img-${menu.id}`}
+            className="bg-muted relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg border"
+          >
+            <Image
+              src={menu.image_url}
+              alt={menu.name}
+              width={40}
+              height={40}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ) : (
+          <div
+            key={`img-fallback-${menu.id}`}
+            className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg border"
+          >
+            <Utensils className="text-muted-foreground h-5 w-5" />
+          </div>
+        ),
+        <div key={`name-${menu.id}`} className="flex flex-col">
+          <span className="text-foreground font-medium">{menu.name}</span>
+          {menu.description && (
+            <span className="text-muted-foreground line-clamp-1 text-xs">
+              {menu.description}
+            </span>
+          )}
+        </div>,
         <Badge
-          key={`role-${user.id}`}
-          variant={
-            user.role === 'admin'
-              ? 'default'
-              : user.role === 'kitchen'
-                ? 'secondary'
-                : 'outline'
-          }
+          key={`category-${menu.id}`}
+          variant="outline"
           className="capitalize"
         >
-          {user.role || 'user'}
+          {menu.category}
+        </Badge>,
+        <div
+          key={`price-${menu.id}`}
+          className="space-y-0.5 text-xs md:text-sm"
+        >
+          <p className="text-muted-foreground">
+            Base:{' '}
+            <span className="text-foreground font-medium">
+              {formatRupiah(menu.price)}
+            </span>
+          </p>
+          <p className="text-muted-foreground">
+            Discount:{' '}
+            <span className="text-foreground font-medium">
+              {menu.discount ? `${menu.discount}%` : '-'}
+            </span>
+          </p>
+          <p className="text-muted-foreground">
+            After Discount:{' '}
+            <span className="text-foreground font-medium">
+              {menu.discount
+                ? formatRupiah(menu.price - (menu.price * menu.discount) / 100)
+                : '-'}
+            </span>
+          </p>
+        </div>,
+        <Badge
+          key={`status-${menu.id}`}
+          variant={menu.is_available ? 'success' : 'destructive'}
+        >
+          {menu.is_available ? 'Available' : 'Unavailable'}
         </Badge>,
         <DropdownAction
-          key={`action-${user.id}`}
+          key={`action-${menu.id}`}
           menu={[
             {
               label: (
@@ -112,7 +159,7 @@ export default function UserManagement() {
                 </span>
               ),
               action: () => {
-                setSelectedAction({ data: user, type: 'update' });
+                setSelectedAction({ data: menu, type: 'update' });
               },
             },
             {
@@ -123,20 +170,15 @@ export default function UserManagement() {
                 </span>
               ),
               variant: 'destructive',
-              disabled: isSelf,
-              tooltip: isSelf
-                ? 'You cannot delete your own account'
-                : undefined,
               action: () => {
-                if (isSelf) return;
-                setSelectedAction({ data: user, type: 'delete' });
+                setSelectedAction({ data: menu, type: 'delete' });
               },
             },
           ]}
         />,
       ];
     });
-  }, [users?.items, page, limit, currentUserId]);
+  }, [menus?.items, page, limit]);
 
   return (
     <div className="space-y-4">
@@ -145,7 +187,7 @@ export default function UserManagement() {
           <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" />
           <Input
             type="search"
-            placeholder="Search by name or role.."
+            placeholder="Search by name or category.."
             className="w-full pl-8"
             onChange={(e) => handleChangeSearch(e.target.value)}
           />
@@ -157,13 +199,13 @@ export default function UserManagement() {
           className="group w-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 sm:w-auto"
           onClick={() => setSelectedAction({ type: 'create' })}
         >
-          <UserPlus className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-          Create User
+          <Plus className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+          Create Menu
         </Button>
       </div>
 
       <DataTable
-        headers={HEADER_TABLE_USER}
+        headers={HEADER_TABLE_MENU}
         data={filteredData}
         isLoading={isLoading}
         isError={isError}
@@ -171,7 +213,7 @@ export default function UserManagement() {
           fetchError instanceof Error ? fetchError.message : 'Unknown error'
         }
         onRetry={() => refetch()}
-        emptyMessage="No users found."
+        emptyMessage="No menus found."
         pagination={{
           currentPage: page,
           totalPages: Math.max(DEFAULT_PAGE, totalPages),
@@ -181,18 +223,18 @@ export default function UserManagement() {
         }}
       />
 
-      <DialogCreateUser
+      <DialogCreateMenu
         open={selectedAction?.type === 'create'}
         handleChangeAction={handleCloseDialog}
         refetch={refetch}
       />
-      <DialogUpdateUser
+      <DialogUpdateMenu
         open={selectedAction?.type === 'update'}
         currentData={selectedAction?.data}
         handleChangeAction={handleCloseDialog}
         refetch={refetch}
       />
-      <DialogDeleteUser
+      <DialogDeleteMenu
         open={selectedAction?.type === 'delete'}
         currentData={selectedAction?.data}
         handleChangeAction={handleCloseDialog}

@@ -3,14 +3,13 @@ import {
   DEFAULT_LIMIT,
   DEFAULT_PAGE,
 } from '@/constants/data-table-constants';
-import { useState } from 'react';
-import useDebounce from '@/hooks/use-debounce';
+import { useRef, useState } from 'react';
 
 export default function useDataTable() {
   const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE);
   const [currentLimit, setCurrentLimit] = useState(DEFAULT_LIMIT);
   const [currentSearch, setCurrentSearch] = useState('');
-  const debounce = useDebounce();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleChangePage = (page: number) => {
     setCurrentPage(page);
@@ -22,7 +21,8 @@ export default function useDataTable() {
   };
 
   const handleChangeSearch = (search: string) => {
-    debounce(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
       setCurrentSearch(search);
       setCurrentPage(DEFAULT_PAGE);
     }, DEFAULT_DELAY);

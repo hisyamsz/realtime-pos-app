@@ -2,7 +2,6 @@
 
 import { FieldValues, UseFormReturn, Control } from 'react-hook-form';
 import { Loader2 } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import {
@@ -14,34 +13,31 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import { FormInput } from '@/components/common/form-input';
-import { PasswordInput } from '@/components/common/password-input';
 import FormSelect from '@/components/common/form-select';
 import { FormImage } from '@/components/common/form-image';
 
-import { ROLE_LIST } from '@/constants/auth-constants';
-import { CreateUserForm, UpdateUserForm } from '@/validation/auth-validation';
+import { MENU_CATEGORIES, MENU_STATUS } from '@/constants/menu-constants';
+import { CreateMenuForm, UpdateMenuForm } from '@/validation/menu-validation';
 
-interface FormUserProps<T extends FieldValues> {
+interface FormMenuProps<T extends FieldValues> {
   form: UseFormReturn<T>;
   onSubmitAction: (e?: React.FormEvent<HTMLFormElement>) => void;
   isPending?: boolean;
   submitLabel: string;
   type: 'create' | 'update';
-  isRoleDisabled?: boolean;
   isSubmitDisabled?: boolean;
 }
 
-export function FormUser<T extends CreateUserForm | UpdateUserForm>({
+export function FormMenu<T extends CreateMenuForm | UpdateMenuForm>({
   form,
   onSubmitAction,
   isPending = false,
-  submitLabel = 'Create User',
+  submitLabel = 'Create Menu',
   type,
-  isRoleDisabled = false,
   isSubmitDisabled = false,
-}: FormUserProps<T>) {
+}: FormMenuProps<T>) {
   const isCreate = type === 'create';
-  const control = form.control as unknown as Control<CreateUserForm>;
+  const control = form.control as unknown as Control<CreateMenuForm>;
 
   return (
     <DialogContent
@@ -52,12 +48,12 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
     >
       <DialogHeader>
         <DialogTitle>
-          {isCreate ? 'Create New User' : 'Update User'}
+          {isCreate ? 'Create New Menu' : 'Update Menu'}
         </DialogTitle>
         <DialogDescription>
           {isCreate
-            ? 'Fill in the user details below to add a new account.'
-            : 'Update the user details below to update the account.'}
+            ? 'Fill in the menu details below to add a new menu.'
+            : 'Update the menu details below to update the menu.'}
         </DialogDescription>
       </DialogHeader>
 
@@ -66,45 +62,66 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
           <FormInput
             control={control}
             name="name"
-            label="Full Name"
-            placeholder="Enter full name"
+            label="Menu Name"
+            placeholder="Enter menu name"
             disabled={isPending}
           />
 
-          {isCreate && (
+          <div className="grid grid-cols-2 gap-4">
             <FormInput
               control={control}
-              name="email"
-              label="Email Address"
-              placeholder="name@example.com"
-              type="email"
+              name="price"
+              label="Price (Rp)"
+              placeholder="Enter price"
+              type="number"
+              min={0}
               disabled={isPending}
             />
-          )}
-
-          {isCreate && (
-            <PasswordInput
+            <FormInput
               control={control}
-              name="password"
-              label="Password"
-              placeholder="Enter password"
+              name="discount"
+              label="Discount (%)"
+              placeholder="Enter discount %"
+              type="number"
+              min={0}
+              max={100}
               disabled={isPending}
             />
-          )}
+          </div>
 
-          <FormSelect
+          <FormInput
             control={control}
-            name="role"
-            label="Role"
-            placeholder="Select a role"
-            selectItem={ROLE_LIST}
-            disabled={isPending || isRoleDisabled}
+            name="description"
+            label="Description"
+            placeholder="Enter description"
+            type="textarea"
+            disabled={isPending}
           />
+
+          <div className="grid grid-cols-2 gap-4">
+            <FormSelect
+              control={control}
+              name="category"
+              label="Category"
+              placeholder="Select a category"
+              selectItem={MENU_CATEGORIES}
+              disabled={isPending}
+            />
+
+            <FormSelect
+              control={control}
+              name="is_available"
+              label="Status"
+              placeholder="Select status"
+              selectItem={MENU_STATUS}
+              disabled={isPending}
+            />
+          </div>
 
           <FormImage
             control={control}
-            name="avatar_url"
-            label="Avatar (Optional)"
+            name="image_url"
+            label="Menu Image"
             disabled={isPending}
           />
 
@@ -125,7 +142,7 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
               disabled={isPending || isSubmitDisabled}
               title={
                 isSubmitDisabled
-                  ? 'Please modify at least one valid field to submit'
+                  ? 'Please upload menu image to submit'
                   : undefined
               }
             >

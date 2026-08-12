@@ -17,18 +17,17 @@ const buttonVariants = cva(
           'border border-input bg-transparent text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground',
         secondary:
           'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
-        ghost:
-          'hover:bg-accent hover:text-accent-foreground',
+        ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
       },
       size: {
         default: 'h-9 px-4 py-2 text-sm has-[>svg]:px-3',
-        sm: 'h-8 px-3 text-xs gap-1.5 has-[>svg]:px-2.5 [&_svg:not([class*=\'size-\'])]:size-3.5',
-        lg: 'h-10 px-6 text-base gap-2 has-[>svg]:px-4 [&_svg:not([class*=\'size-\'])]:size-4.5',
-        xl: 'h-12 px-8 text-base gap-2.5 has-[>svg]:px-6 [&_svg:not([class*=\'size-\'])]:size-5',
+        sm: "h-8 px-3 text-xs gap-1.5 has-[>svg]:px-2.5 [&_svg:not([class*='size-'])]:size-3.5",
+        lg: "h-10 px-6 text-base gap-2 has-[>svg]:px-4 [&_svg:not([class*='size-'])]:size-4.5",
+        xl: "h-12 px-8 text-base gap-2.5 has-[>svg]:px-6 [&_svg:not([class*='size-'])]:size-5",
         icon: 'size-9 p-0',
-        'icon-sm': 'size-8 p-0 [&_svg:not([class*=\'size-\'])]:size-3.5',
-        'icon-lg': 'size-10 p-0 [&_svg:not([class*=\'size-\'])]:size-5',
+        'icon-sm': "size-8 p-0 [&_svg:not([class*='size-'])]:size-3.5",
+        'icon-lg': "size-10 p-0 [&_svg:not([class*='size-'])]:size-5",
       },
     },
     defaultVariants: {

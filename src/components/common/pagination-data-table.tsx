@@ -6,8 +6,8 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "../ui/pagination";
-import { DEFAULT_PAGE } from "@/constants/data-table-constants";
+} from '../ui/pagination';
+import { DEFAULT_PAGE } from '@/constants/data-table-constants';
 
 interface PaginationDataTableProps {
   totalPages: number;
@@ -27,8 +27,8 @@ export default function PaginationDataTable({
           <PaginationPrevious
             className={
               currentPage <= DEFAULT_PAGE
-                ? "pointer-events-none opacity-50"
-                : "cursor-pointer"
+                ? 'pointer-events-none opacity-50'
+                : 'cursor-pointer'
             }
             onClick={() => {
               if (currentPage > DEFAULT_PAGE) {
@@ -78,8 +78,8 @@ export default function PaginationDataTable({
           <PaginationNext
             className={
               currentPage >= totalPages
-                ? "pointer-events-none opacity-50"
-                : "cursor-pointer"
+                ? 'pointer-events-none opacity-50'
+                : 'cursor-pointer'
             }
             onClick={() => {
               if (currentPage < totalPages) {

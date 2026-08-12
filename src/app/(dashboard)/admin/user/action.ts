@@ -1,5 +1,6 @@
 'use server';
 
+import { verifyAdminAuth } from '@/actions/auth-action';
 import { deleteFile, uploadFile } from '@/actions/storage-action';
 import { createClient } from '@/lib/supabase/server';
 import { CreateUserFormState, UpdateUserFormState } from '@/types/auth';
@@ -7,35 +8,6 @@ import {
   createUserSchema,
   updateUserSchema,
 } from '@/validation/auth-validation';
-
-async function verifyAdminAuth(actionName: string) {
-  const supabase = await createClient({});
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return {
-      isAuthorized: false,
-      error: 'Unauthorized: You must be logged in',
-    };
-  }
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (profile?.role !== 'admin') {
-    return {
-      isAuthorized: false,
-      error: `Forbidden: Only admins can ${actionName}`,
-    };
-  }
-
-  return { isAuthorized: true };
-}
 
 export async function createUser(
   prevState: CreateUserFormState,
