@@ -8,7 +8,11 @@ import { toast } from 'sonner';
 import { Dialog } from '@/components/ui/dialog';
 import { FormMenu } from './form-menu';
 
-import { updateMenuSchema, UpdateMenuForm, Menu } from '@/validation/menu-validation';
+import {
+  updateMenuSchema,
+  UpdateMenuForm,
+  Menu,
+} from '@/validation/menu-validation';
 import { INITIAL_STATE_UPDATE_MENU } from '@/constants/menu-constants';
 import { updateMenu } from '../action';
 
@@ -66,7 +70,8 @@ export default function DialogUpdateMenu({
 
     if (updateMenuState.status === 'error') {
       toast.error('Update Menu Failed', {
-        description: updateMenuState.errors?._form?.[0] || 'Unknown error occurred',
+        description:
+          updateMenuState.errors?._form?.[0] || 'Unknown error occurred',
       });
       if (updateMenuState.errors) {
         Object.entries(updateMenuState.errors).forEach(([field, errors]) => {
@@ -106,7 +111,7 @@ export default function DialogUpdateMenu({
     <Dialog open={open} onOpenChange={handleChangeAction}>
       <FormMenu
         form={form}
-        onSubmit={onSubmit}
+        onSubmitAction={onSubmit}
         isPending={isPendingUpdateMenu}
         submitLabel="Update menu"
         type="update"

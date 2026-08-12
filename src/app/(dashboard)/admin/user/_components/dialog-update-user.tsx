@@ -97,7 +97,7 @@ export default function DialogUpdateUser({
     <Dialog open={open} onOpenChange={handleChangeAction}>
       <FormUser
         form={form}
-        onSubmit={onSubmit}
+        onSubmitAction={onSubmit}
         isPending={isPendingUpdateUser}
         submitLabel="Update user"
         type="update"

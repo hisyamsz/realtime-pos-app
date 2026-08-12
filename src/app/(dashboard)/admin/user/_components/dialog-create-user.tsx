@@ -62,7 +62,7 @@ export default function DialogCreateUser({
   return (
     <FormUser
       form={form}
-      onSubmit={onSubmit}
+      onSubmitAction={onSubmit}
       isPending={isPendingCreateUser}
       submitLabel="Create user"
       type="create"

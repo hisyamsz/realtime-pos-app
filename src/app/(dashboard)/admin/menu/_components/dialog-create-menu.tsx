@@ -86,7 +86,7 @@ export default function DialogCreateMenu({
     <Dialog open={open} onOpenChange={handleChangeAction}>
       <FormMenu
         form={form}
-        onSubmit={onSubmit}
+        onSubmitAction={onSubmit}
         isPending={isPendingCreateMenu}
         submitLabel="Create Menu"
         type="create"

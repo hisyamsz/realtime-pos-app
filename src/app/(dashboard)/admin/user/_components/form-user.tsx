@@ -23,7 +23,7 @@ import { CreateUserForm, UpdateUserForm } from '@/validation/auth-validation';
 
 interface FormUserProps<T extends FieldValues> {
   form: UseFormReturn<T>;
-  onSubmit: (e?: React.FormEvent<HTMLFormElement>) => void;
+  onSubmitAction: (e?: React.FormEvent<HTMLFormElement>) => void;
   isPending?: boolean;
   submitLabel: string;
   type: 'create' | 'update';
@@ -33,7 +33,7 @@ interface FormUserProps<T extends FieldValues> {
 
 export function FormUser<T extends CreateUserForm | UpdateUserForm>({
   form,
-  onSubmit,
+  onSubmitAction,
   isPending = false,
   submitLabel = 'Create User',
   type,
@@ -62,7 +62,7 @@ export function FormUser<T extends CreateUserForm | UpdateUserForm>({
       </DialogHeader>
 
       <Form {...form}>
-        <form onSubmit={onSubmit} className="space-y-4 py-4">
+        <form onSubmit={onSubmitAction} className="space-y-4 py-4">
           <FormInput
             control={control}
             name="name"

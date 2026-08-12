@@ -21,7 +21,7 @@ import { CreateMenuForm, UpdateMenuForm } from '@/validation/menu-validation';
 
 interface FormMenuProps<T extends FieldValues> {
   form: UseFormReturn<T>;
-  onSubmit: (e?: React.FormEvent<HTMLFormElement>) => void;
+  onSubmitAction: (e?: React.FormEvent<HTMLFormElement>) => void;
   isPending?: boolean;
   submitLabel: string;
   type: 'create' | 'update';
@@ -30,7 +30,7 @@ interface FormMenuProps<T extends FieldValues> {
 
 export function FormMenu<T extends CreateMenuForm | UpdateMenuForm>({
   form,
-  onSubmit,
+  onSubmitAction,
   isPending = false,
   submitLabel = 'Create Menu',
   type,
@@ -58,7 +58,7 @@ export function FormMenu<T extends CreateMenuForm | UpdateMenuForm>({
       </DialogHeader>
 
       <Form {...form}>
-        <form onSubmit={onSubmit} className="space-y-4 py-4">
+        <form onSubmit={onSubmitAction} className="space-y-4 py-4">
           <FormInput
             control={control}
             name="name"
