@@ -1,4 +1,4 @@
-import { ReactNode, Ref } from 'react';
+import { ReactNode, Ref, ChangeEvent } from 'react';
 import {
   Control,
   FieldPath,
@@ -38,6 +38,20 @@ export function FormInput<
   ref,
   ...props
 }: FormInputProps<TFieldValues, TName> & { ref?: Ref<HTMLInputElement> }) {
+  const isNumber = props.type === 'number';
+
+  const standaloneProps = isNumber
+    ? {
+        ...props,
+        type: 'text',
+        inputMode: 'numeric' as const,
+        onChange: (e: ChangeEvent<HTMLInputElement>) => {
+          e.target.value = e.target.value.replace(/\D/g, '');
+          props.onChange?.(e);
+        },
+      }
+    : props;
+
   if (control && name) {
     return (
       <FormField
@@ -53,13 +67,18 @@ export function FormInput<
                 <Input
                   {...props}
                   {...field}
+                  type={isNumber ? 'text' : props.type}
+                  inputMode={isNumber ? 'numeric' : props.inputMode}
                   value={field.value ?? ''}
                   onChange={(e) => {
-                    if (props.type === 'number') {
-                      const val = e.target.value;
-                      field.onChange(val === '' ? '' : Number(val));
+                    if (isNumber) {
+                      const digits = e.target.value.replace(/\D/g, '');
+                      e.target.value = digits;
+                      field.onChange(digits ? Number(digits) : '');
+                      props.onChange?.(e);
                     } else {
                       field.onChange(e);
+                      props.onChange?.(e);
                     }
                   }}
                 />
@@ -80,11 +99,11 @@ export function FormInput<
             {label}
           </label>
         )}
-        <Input ref={ref} {...props} />
+        <Input ref={ref} {...standaloneProps} />
         {error && <p className="text-destructive text-sm">{error}</p>}
       </div>
     );
   }
 
-  return <Input ref={ref} {...props} />;
+  return <Input ref={ref} {...standaloneProps} />;
 }
