@@ -1,6 +1,5 @@
 import { ReactNode, Ref, ChangeEvent } from 'react';
 import {
-  Control,
   FieldPath,
   FieldValues,
   ControllerRenderProps,
@@ -40,17 +39,17 @@ export function FormInput<
 }: FormInputProps<TFieldValues, TName> & { ref?: Ref<HTMLInputElement> }) {
   const isNumber = props.type === 'number';
 
-  const standaloneProps = isNumber
-    ? {
-        ...props,
-        type: 'text',
-        inputMode: 'numeric' as const,
-        onChange: (e: ChangeEvent<HTMLInputElement>) => {
-          e.target.value = e.target.value.replace(/\D/g, '');
-          props.onChange?.(e);
-        },
-      }
-    : props;
+  const inputProps = {
+    ...props,
+    ...(isNumber && {
+      type: 'text' as const,
+      inputMode: props.inputMode ?? ('numeric' as const),
+    }),
+    onChange: (e: ChangeEvent<HTMLInputElement>) => {
+      if (isNumber) e.target.value = e.target.value.replace(/\D/g, '');
+      props.onChange?.(e);
+    },
+  };
 
   if (control && name) {
     return (
@@ -65,21 +64,13 @@ export function FormInput<
                 renderInput(field, fieldState)
               ) : (
                 <Input
-                  {...props}
+                  {...inputProps}
                   {...field}
-                  type={isNumber ? 'text' : props.type}
-                  inputMode={isNumber ? 'numeric' : props.inputMode}
                   value={field.value ?? ''}
                   onChange={(e) => {
-                    if (isNumber) {
-                      const digits = e.target.value.replace(/\D/g, '');
-                      e.target.value = digits;
-                      field.onChange(digits ? Number(digits) : '');
-                      props.onChange?.(e);
-                    } else {
-                      field.onChange(e);
-                      props.onChange?.(e);
-                    }
+                    const d = e.target.value.replace(/\D/g, '');
+                    field.onChange(isNumber ? (d ? Number(d) : '') : e);
+                    props.onChange?.(e);
                   }}
                 />
               )}
@@ -99,11 +90,11 @@ export function FormInput<
             {label}
           </label>
         )}
-        <Input ref={ref} {...standaloneProps} />
+        <Input ref={ref} {...inputProps} />
         {error && <p className="text-destructive text-sm">{error}</p>}
       </div>
     );
   }
 
-  return <Input ref={ref} {...standaloneProps} />;
+  return <Input ref={ref} {...inputProps} />;
 }
