@@ -13,6 +13,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import { FormInput } from '@/components/common/form-input';
+import { FormCurrencyInput } from '@/components/common/form-currency-input';
 import FormSelect from '@/components/common/form-select';
 import { FormImage } from '@/components/common/form-image';
 
@@ -68,13 +69,11 @@ export function FormMenu<T extends CreateMenuForm | UpdateMenuForm>({
           />
 
           <div className="grid grid-cols-2 gap-4">
-            <FormInput
+            <FormCurrencyInput
               control={control}
               name="price"
               label="Price (Rp)"
               placeholder="Enter price"
-              type="number"
-              min={0}
               disabled={isPending}
             />
             <FormInput
