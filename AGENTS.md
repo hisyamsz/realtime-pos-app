@@ -2,7 +2,7 @@
 
 ## Workspace Rules
 
-Selalu patuhi aturan proyek di [RULES.md](RULES.md).
+Always adhere to the project rules in [RULES.md](RULES.md).
 
 ## Agent skills
 
